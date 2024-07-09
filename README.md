@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Blogging Website
 
 ## Overview
@@ -118,3 +119,6 @@ Welcome to the Blogging Website, a comprehensive platform designed for users to 
    - Bookmark blogs that you like.
    - Search for blogs and users using the search feature.
 
+=======
+# Blogwebsite
+>>>>>>> 0425b658f0c700853aa0a64bafd5e27223b21fd2
