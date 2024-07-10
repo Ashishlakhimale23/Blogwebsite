@@ -19,7 +19,6 @@ function App() {
         <BlogProvider>
           <UserInfoProvider>
             <AuthProvider>
-
               <Layout />
             </AuthProvider>
           </UserInfoProvider>

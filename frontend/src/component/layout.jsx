@@ -11,6 +11,7 @@ import { UserProfile } from '../page/userprofile'
 import Draft from '../page/draft'
 import ManageBlogs from '../page/manageblogs'
 import Bookmark from '../page/bookmarks'
+import { PrivateRoute } from './PrivateRoute'
 
 
 
@@ -22,21 +23,22 @@ function Layout() {
 
   return (
     <>
-              {!noheader.includes(location.pathname) && <Header />}
-              <Routes>
-                <Route path='/' element={authtoken?<Home/>:<Signin/>}></Route>
-                <Route path="/signin" element={<Signin />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/home" element={<Home />} />
-                <Route path="/createpost" element={<CreatePost />} />
-                <Route path='/edit/:username' element={<Usersinfo/>}/>  
-                <Route path='/:username' element={<UserProfile/>}></Route>
-                <Route path='/blog/:title' element={<BlogPage/>}/>
-                <Route path='/draft' element={<Draft/>} />
-                <Route path='/manageblogs' element={<ManageBlogs/>}></Route>
-                <Route path='/bookmarks' element={<Bookmark/>}/>
-              </Routes>
-           
+      {!noheader.includes(location.pathname) && <Header />}
+      <Routes>
+        <Route path="/" element={authtoken ? <Home /> : <Signin/>}></Route>
+        <Route path="/signin" element={<Signin />} />
+        <Route path="/login" element={<Login />} />
+        <Route element={<PrivateRoute/>}>
+          <Route path="/home" element={<Home />} />
+          <Route path="/createpost" element={<CreatePost />} />
+          <Route path="/edit/:username" element={<Usersinfo />} />
+          <Route path="/:username" element={<UserProfile />}></Route>
+          <Route path="/blog/:title" element={<BlogPage />} />
+          <Route path="/draft" element={<Draft />} />
+          <Route path="/manageblogs" element={<ManageBlogs />}></Route>
+          <Route path="/bookmarks" element={<Bookmark />} />
+</Route>
+      </Routes>
     </>
   );
 }
