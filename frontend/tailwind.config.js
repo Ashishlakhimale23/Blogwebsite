@@ -6,6 +6,15 @@ export default {
   ],
   theme: {
     extend:{
+        animation: {
+        shimmer: 'shimmer 1.5s infinite linear',
+      },
+      keyframes: {
+        shimmer: {
+          '0%': {backgroundPosition: '100% 0'  },
+          '100%': {backgroundPosition: '-100% 0'  },
+        },
+      },
 boxShadow: {
         custom: '8px 8px rgba(0, 0, 0)', // Custom shadow
       },

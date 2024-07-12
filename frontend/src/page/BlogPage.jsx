@@ -4,6 +4,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import BlogParser from "../component/blogparser";
 import { getdate } from "../utils/date";
 import { api } from "../utils/axiosroute";
+import { SkeletonLoad } from "../component/Skeleton";
 
 const blogstructure={
     blogtitle:"",
@@ -20,9 +21,11 @@ function BlogPage(){
     const {id} = location.state.data
     const {title:encodeduri} = useParams()
     const title = decodeURIComponent(encodeduri)
+    const [loading,setLoading] = useState(false)
     
     useEffect(()=>{
         async function fetchblog(){
+          setLoading(true)
             await api.post('/blog',{id,title}).
             then((resp)=>{
                 setBlog((prevBlog)=>({
@@ -39,11 +42,20 @@ function BlogPage(){
                   }}
 
                 }))
+                  
+                setLoading(false)
             })
             .catch(err=>console.log(err))
         }
         fetchblog()
     },[])
+
+  if(loading){
+    return(
+      <SkeletonLoad/>
+    )
+  }
+
    return (
    <div className="lg:flex lg:justify-center lg:items-center md:p-12 md:pt-0 min-h-screen mt-16 overflow-hidden w-full">
   <div className="font-display p-6 w-full max-w-[900px]">

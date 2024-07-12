@@ -27,7 +27,7 @@ async function fetchdata(){
         <div className="flex w-full h-full justify-center p-8 mt-16 mb-5 sm:p-12 md:p-16 " >
           <div className="space-y-8 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-8">
             {blogs == null ? (
-              <h1></h1>
+              <p className="text-4xl font-display font-bold"></p>
             ) : (
               blogs.map((blog, i) => (
                 <Card

@@ -1,4 +1,5 @@
 import  {useEffect, useRef, useState} from 'react';
+
 import { useNavigate} from 'react-router-dom';
 import  { Authcontext, UserContext, WholeBlogAndUser, searchpopover} from "../context/context.js";
 import { useContext} from "react";
@@ -103,7 +104,7 @@ async function fetchusersandblogs(){
  },[open])
  if(loading){
   return (
-    <div className="min-h-screen w-full flex justify-center items-center">
+    <div className=" w-full h-svh flex justify-center items-center ">
       <p className='text-4xl font-display font-bold'>Loading ... </p>
     </div>
   )
@@ -188,10 +189,10 @@ async function fetchusersandblogs(){
 </button >
           </div>
         </header>
-
+{
+  open ?
         <div
           className={`w-11/12 ml-6 mt-4 mb-4 flex-col fixed bottom-0 right-0 left-0  bg-silver border-4 border-black font-display sm:w-80  sm:left-auto sm:right-4 sm:bottom-auto shadow-custom`}
-          style={{ display: open ? "block" : "none" }}
           
         >
           <div ref={popover}>
@@ -315,11 +316,18 @@ async function fetchusersandblogs(){
             <p className="font-display ">Log out</p>
           </div>
 </div>
-        </div>
+        </div>:null
+}
       </div>
-      <div style={{ display: search ? "block" : "none" }}>
+      {search?
+        <div 
+        
+        >
+
         <Search imagesearch={imagesearch} />
-      </div>
+      </div>:null
+      }
+      
     </>
   );
 }

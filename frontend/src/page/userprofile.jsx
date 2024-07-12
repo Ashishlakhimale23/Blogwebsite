@@ -4,12 +4,13 @@ import { useLocation, useNavigate, useParams } from "react-router-dom"
 import {getdate} from "../utils/date"
 import { api } from "../utils/axiosroute"
 import UserBlogShow from "../component/userblogshow"
+import { ProfileSkeleton } from "../component/ProfileSkeleton"
 export function UserProfile(){
  const navigate = useNavigate() 
  const {username:Username} = useParams()
  const location = useLocation();
  const {userid} = location.state.data
- 
+ const [loading,setLoading] = useState(false) 
  const {info,setInfo,initialinfo} = useContext(UserContext);
  const {username:usersusername} = initialinfo;
  
@@ -25,7 +26,9 @@ const {
   joinedOn
 }=info
 useEffect(()=>{
+
     async function fetchuserinfo(){
+      setLoading(true)
      await api.post("/getotheruserinfo",{username:Username,userid:userid}).then((response)=>{
       setInfo({
         ...info,
@@ -39,7 +42,7 @@ useEffect(()=>{
         blogs: response.data.userinfo[0].blogs,
         joinedOn:getdate(response.data.userinfo[0].joinedOn)
       });
-      
+     setLoading(false) 
 
     }).catch(err=>console.log(err))
 
@@ -47,8 +50,13 @@ useEffect(()=>{
     
     fetchuserinfo()
 
- },[])
-
+ },[Username,userid])
+ 
+ if(loading){
+  return (
+    <ProfileSkeleton/>
+  )
+ }
  
 
     return (
