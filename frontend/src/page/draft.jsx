@@ -1,16 +1,22 @@
-import { useContext } from "react";
-import { BlogContext, UserContext } from "../context/context";
+import { useContext, useState,useEffect } from "react";
+import { BlogContext } from "../context/context";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { api } from "../utils/axiosroute";
 import { Toaster,toast } from "react-hot-toast";
 import { getdate } from "../utils/date";
 function Draft(){
-    const {initialinfo} = useContext(UserContext)
+    const [draft,setDraft] = useState([])
     const {setBlog} = useContext(BlogContext)
-    const {draft} =initialinfo
     const navigate = useNavigate()
-    
+    useEffect(()=>{
+      const fetchbookmarks= async ()=>{
+        await api.get("/getdrafts").then((resp)=>{
+         
+          setDraft(resp.data.drafts.draft)
+        })
+      }      
+      fetchbookmarks()
+    },[])   
     return (
         <>
 <div className="min-h-screen w-full mt-16 p-4 font-display ">

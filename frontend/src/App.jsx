@@ -5,6 +5,7 @@ import Layout from './component/layout'
 import { UserInfoProvider } from './context/UserInfoProvider';
 import { SearchContentProvider } from './context/SearchContentProvider';
 import SearchProvider from './context/SearchProvider';
+import { Toaster } from 'react-hot-toast';
 
 
 
@@ -15,17 +16,18 @@ function App() {
     <>
       <Router>
         <SearchProvider>
-        <SearchContentProvider>
-        <BlogProvider>
-          <UserInfoProvider>
-            <AuthProvider>
-              <Layout />
-            </AuthProvider>
-          </UserInfoProvider>
-        </BlogProvider>
-</SearchContentProvider>
-</SearchProvider>
+          <SearchContentProvider>
+            <BlogProvider>
+              <UserInfoProvider>
+                <AuthProvider>
+                  <Layout />
+                </AuthProvider>
+              </UserInfoProvider>
+            </BlogProvider>
+          </SearchContentProvider>
+        </SearchProvider>
       </Router>
+      <Toaster/>
     </>
   );
 }

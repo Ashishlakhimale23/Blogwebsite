@@ -10,7 +10,7 @@ export default {
         shimmer: 'shimmer 1.5s infinite linear',
       },
       keyframes: {
-        shimmer: {
+         shimmer: {
           '0%': {backgroundPosition: '100% 0'  },
           '100%': {backgroundPosition: '-100% 0'  },
         },

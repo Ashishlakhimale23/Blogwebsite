@@ -6,30 +6,16 @@ import {Toaster,toast} from "react-hot-toast"
 
 
 function Home () {
- const [blogs,setBlogs] = useState(null);
- const {initialinfo,setInitialinfo} = useContext(UserContext)
-useEffect(()=>{
-async function fetchdata(){
-       await api.get("/getblogs")
-          .then((resp)=>{console.log(resp);
-            setBlogs(resp.data.blogs);
-          })
-          .catch((error)=>{console.error(error)})
-      }
-      
-      fetchdata();
-},[])
-
-
+ const {initialinfo} = useContext(UserContext)
     return (
       <>
        
         <div className="flex w-full h-full justify-center p-8 mt-16 mb-5 sm:p-12 md:p-16 " >
           <div className="space-y-8 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-8">
-            {blogs == null ? (
-              <p className="text-4xl font-display font-bold"></p>
+            {!initialinfo.blogs ? (
+              <p className="text-4xl font-display font-bold text-black"></p>
             ) : (
-              blogs.map((blog, i) => (
+              initialinfo.blogs.map((blog, i) => (
                 <Card
                   key={i}
                   title={blog.title}
@@ -40,6 +26,7 @@ async function fetchdata(){
                   content={blog.content}
                   id={blog._id}
                   bookmarks={initialinfo.bookmarks}
+                  BlogLink={blog.BlogLink}
                 
                 ></Card>
               ))

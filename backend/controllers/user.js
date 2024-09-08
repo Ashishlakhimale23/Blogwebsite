@@ -94,6 +94,7 @@ export const handlerevokthetoken =async(req,res)=>{
     const {refreshtoken} = req.body;
 
     jwt.verify(refreshtoken,process.env.REFERSH_SECRET_KEY,(err,resp)=>{
+        console.log(err,resp)
         if(err){
             return res.status(403).end()
         }
@@ -102,7 +103,7 @@ export const handlerevokthetoken =async(req,res)=>{
             { expiresIn: '7h' })
 
         const newrefreshtoken = jwt.sign({ email:resp.email, id:resp.id },process.env.REFERSH_SECRET_KEY,{expiresIn:"7d"})
-        return res.json({"token":newauthtoken,"refreshtoken":newrefreshtoken})
+        return res.status(200).json({"token":newauthtoken,"refreshtoken":newrefreshtoken})
     })
 
 }

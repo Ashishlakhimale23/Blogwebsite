@@ -1,8 +1,6 @@
 import {  useState ,useEffect} from "react";
-
 import { getdate } from "../utils/date";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { api } from "../utils/axiosroute";
 
 function Bookmark(){
@@ -11,6 +9,7 @@ function Bookmark(){
     useEffect(()=>{
       const fetchbookmarks= async ()=>{
         await api.get("/getbookmarks").then((resp)=>{
+        
        
           setBookmark(resp.data.bookmark.bookmarks)
         })
@@ -32,10 +31,9 @@ function Bookmark(){
                       <div
                         className="flex-1 content-center cursor-pointer"
                         onClick={() => {
-                          navigate(`/blog/${encodeURIComponent(bookmarks.title)}`, {
-
-                            state: { data: { id: bookmarks._id } },
-                          });
+                          let BlogLink = bookmarks.BlogLink
+                          
+                          navigate(`/blog/${BlogLink}`);
                         }}
                       >
                         <p className="text-lg font-bold hover:underline">

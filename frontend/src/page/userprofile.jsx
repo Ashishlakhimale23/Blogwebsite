@@ -8,8 +8,6 @@ import { ProfileSkeleton } from "../component/ProfileSkeleton"
 export function UserProfile(){
  const navigate = useNavigate() 
  const {username:Username} = useParams()
- const location = useLocation();
- const {userid} = location.state.data
  const [loading,setLoading] = useState(false) 
  const {info,setInfo,initialinfo} = useContext(UserContext);
  const {username:usersusername} = initialinfo;
@@ -29,18 +27,18 @@ useEffect(()=>{
 
     async function fetchuserinfo(){
       setLoading(true)
-     await api.post("/getotheruserinfo",{username:Username,userid:userid}).then((response)=>{
+     await api.post("/getotheruserinfo",{Username}).then((response)=>{
       setInfo({
         ...info,
-        username: response.data.userinfo[0].username,
-        pfplink: response.data.userinfo[0].pfplink,
-        email: response.data.userinfo[0].email,
-        aboutyou: response.data.userinfo[0].about,
-        github: response.data.userinfo[0].github,
-        twitter: response.data.userinfo[0].twitter,
-        techstack: response.data.userinfo[0].techstack,
-        blogs: response.data.userinfo[0].blogs,
-        joinedOn:getdate(response.data.userinfo[0].joinedOn)
+        username: response.data.userinfo.username,
+        pfplink: response.data.userinfo.pfplink,
+        email: response.data.userinfo.email,
+        aboutyou: response.data.userinfo.about,
+        github: response.data.userinfo.github,
+        twitter: response.data.userinfo.twitter,
+        techstack: response.data.userinfo.techstack,
+        blogs: response.data.userinfo.blogs,
+        joinedOn:getdate(response.data.userinfo.joinedOn)
       });
      setLoading(false) 
 
@@ -50,7 +48,7 @@ useEffect(()=>{
     
     fetchuserinfo()
 
- },[Username,userid])
+ },[Username])
  
  if(loading){
   return (
@@ -182,7 +180,7 @@ useEffect(()=>{
                   {!blogs
                     ? null
                     : blogs.map((blog, index) => (
-                        <UserBlogShow key={index} _id={blog._id} title={blog.title} publishedOn={blog.publishedOn} />
+                        <UserBlogShow key={index} title={blog.title} BlogLink={blog.BlogLink} publishedOn={blog.publishedOn} />
                       ))}
                 </div>
               </div>

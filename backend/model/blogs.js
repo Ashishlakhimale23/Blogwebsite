@@ -22,9 +22,11 @@ const blogs = new mongoose.Schema({
         type:Boolean,
         required:true
     },
-    
-    
-
+    BlogLink:{
+        type:String,
+        required:true,
+        unique:true
+    }
 },{timestamps:{
     createdAt:"publishedOn",
 }})

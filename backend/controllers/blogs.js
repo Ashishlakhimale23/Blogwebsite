@@ -1,62 +1,79 @@
 
 import Blog from "../model/blogs.js";
 import User from "../model/user.js";
+import {RemoveAllTheSpace ,RemoveExtraSpace} from "../Utils/FilterOuThespaces.js" 
 
 export const handlecreateblog=async(req,res)=>{
-    const userid = req.user;
-    const {title,content,result,banner} = req.body;
-    if(!banner.length){
-        return res.status(403).json({error:'You must add banner to the blog'})
-    }
-    if(!title.length){
-        return res.status(403).json({error:'You must add title to the blog'})
-    }
-    if(!content.length){
-        return res.status(403).json({error:"No content provided"})
-    } 
+  const userid = req.user;
+  let {title,content, result, banner } = req.body;
+  if (!banner.length) {
+    return res.status(403).json({ error: "You must add banner to the blog" });
+  }
+  if (!title.length) {
+    return res.status(403).json({ error: "You must add title to the blog" });
+  }
+  if (!content.length) {
+    return res.status(403).json({ error: "No content provided" });
+  }
+  try{
+  let BlogTitle = RemoveAllTheSpace(title)
+  let titleNoSpaces = RemoveExtraSpace(title)
+  const TitleCount =await Blog.countDocuments({title:titleNoSpaces})
+  let BlogTitleWithCount = TitleCount ? BlogTitle + TitleCount : BlogTitle
+  const BlogTitleCount = await Blog.countDocuments({BlogLink:BlogTitleWithCount})
+  let Count = BlogTitleCount ? TitleCount  + BlogTitleCount : BlogTitleCount
+  BlogTitle = BlogTitleCount ? BlogTitle+Count : BlogTitle
 
-let blog = new Blog({
-        title,content,banner,author:userid,Published:result
+  let blog = new Blog({
+    title:titleNoSpaces,
+    BlogLink:BlogTitle,
+    content,
+    banner,
+    author: userid,
+    Published: result,
+  });
+  blog
+    .save()
+    .then((blogs) => {
+      if (result) {
+        User.findByIdAndUpdate(
+          { _id: userid },
+          {
+            $push: { blogs: blogs._id },
+          }
+        )
+          .then((user) => {
+            return res.status(200).json({ status: "done" });
+          })
+          .catch((err) => {
+            return res
+              .status(500)
+              .json({ error: "failed to update the blog post" });
+          });
+      } else {
+        User.findByIdAndUpdate(
+          { _id: userid },
+          {
+            $push: { draft: blogs._id },
+          }
+        )
+          .then((user) => {
+            return res.status(200).json({ status: "done" });
+          })
+          .catch((err) => {
+            return res
+              .status(500)
+              .json({ error: "failed to update the blog post" });
+          });
+      }
     })
-    blog.save().then((blogs)=>{
-        if(result){
-          User.findByIdAndUpdate(
-            { _id: userid },
-            {
-              $push: { blogs: blogs._id },
-            }
-          )
-            .then((user) => {
-              return res.status(200).json({ status: "done" });
-            })
-            .catch((err) => {
-              return res
-                .status(500)
-                .json({ error: "failed to update the blog post" });
-            });
-        }
-        else{
-User.findByIdAndUpdate(
-            { _id: userid },
-            {
-              $push: { draft: blogs._id },
-            }
-          )
-            .then((user) => {
-              return res.status(200).json({ status: "done" });
-            })
-            .catch((err) => {
-              return res
-                .status(500)
-                .json({ error: "failed to update the blog post" });
-            });
-
-        }
-        }
-
-    ).catch(err=>{return res.status(500).json({error:"failed to upload the blog"})})
-
-    }
+    .catch((err) => {
+      return res.status(500).json({ error: "failed to upload the blog" });
+    });
+}catch(error){
+  return res.status(500).json({message:'internal server error'})
+}
+}
     
 
 
@@ -71,31 +88,44 @@ export const handlegetblogs=async(req,res)=>{
 export const handlegetuserinfo = async (req,res)=>{
   const userid = req.user
  
-  await User.findById(userid).select("username email pfplink  about twitter github techstack blogs draft joinedOn bookmarks").populate("blogs","title content banner publishedOn").populate("draft","title content banner publishedOn")
-  .then((resp)=>{
-  return res.json({userinfo:resp})
-  }).catch(error=>console.log(error))
+  await User.findById(userid).select("username email pfplink  about twitter github techstack blogs draft joinedOn bookmarks").populate({
+    path:"blogs",
+    select:"title content banner publishedOn BlogLink author",
+    populate:{
+      path:"author",
+      select:"username pfplink"
+    }
+  })
+  .then((resp)=>{ 
+  return res.status(200).json({userinfo:resp})
+  }).catch(error=>{
+
+    return res.status(500).json({message:"internal server error"})
+  }
+    )
 }
 
 export const handlegetotheruserinfo = async (req,res)=>{
-  const {userid,username} = req.body;
-  await User.find({_id:userid,username:username}).select("username email pfplink about twitter github techstack joinedOn").populate("blogs","title publishedOn")
+  const {Username} = req.body;
+  await User.findOne({username:Username}).select("username email pfplink about twitter github techstack joinedOn blogs").populate("blogs","title publishedOn BlogLink")
   .then((resp)=>{
-  return res.json({userinfo:resp})
-  }).catch(error=>console.log(error))
+  return res.status(200).json({userinfo:resp})
+  }).catch(()=>{
+    return res.status(500).json({message:"internal server error"})
+  })
 }
 
 export const handlegetpraticularblog=async (req,res)=>{
-  const {id,title} = req.body;
+  const {BlogLink} = req.body;
   
-  await Blog.find({
-    _id:id,title:title
+  await Blog.findOne({
+    BlogLink:BlogLink
+    
   }).populate("author","username pfplink")
   .then((resp)=>{
-    console.log(resp)
-    return res.json({blog:resp})
+    return res.status(200).json({blog:resp})
   }).catch(err=>{
-    return res.json({error:err})
+    return res.status(500).json({error:err})
   })
 }
 
@@ -124,11 +154,21 @@ export const handleblogdeletion=async(req,res)=>{
 
 export const handlegetbookmarks=async(req,res)=>{
   const userid=req.user;
-  await User.findById({_id:userid}).select("bookmarks").populate("bookmarks","title banner content publishedOn").then((resp)=>{
+  await User.findById({_id:userid}).select("bookmarks").populate("bookmarks","title banner content publishedOn BlogLink").then((resp)=>{
     return res.json({bookmark:resp})
+  }).catch(error=>{
+    return res.status(500).json({message:"internal server error"})
   })
 }
 
+export const handlegetdrafts=async(req,res)=>{
+  const userid=req.user;
+  await User.findById({_id:userid}).select("draft").populate("draft","title banner content publishedOn BlogLink").then((resp)=>{
+    return res.status(200).json({drafts:resp})
+  }).catch(error=>{
+    return res.status(500).json({message:"internal server error"})
+  })
+}
 export const handlesavebookmark=async(req,res)=>{
   const {blogid} = req.body;
   const userid = req.user
@@ -163,9 +203,9 @@ export const handlegetallblogsanduser=async(req,res)=>{
   await User.find({}).select("username pfplink joinedOn").then(resp=>{
     const result = resp;
      Blog.find({Published:true}).select("title banner publishedOn _id").then((resp)=>{
-       return res.json({users:result,blogs:resp})
-    }).catch(err=>{return res.json({status:"failed to retrive the blogs"})})
-  }).catch(err=>{return res.json({status:"failed to retrive the users"})})
+       return res.status(200).json({users:result,blogs:resp})
+    }).catch(err=>{return res.status(500).json({message:"failed to retrive the blogs"})})
+  }).catch(err=>{return res.status(500).json({message:"failed to retrive the users"})})
 
 }
 

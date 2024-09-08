@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import BlogParser from "../component/blogparser";
@@ -14,31 +13,29 @@ const blogstructure={
     pushlishedAt:'',
 }
 function BlogPage(){
-    const location = useLocation()
     const navigate = useNavigate()
     const [blog,setBlog] = useState(blogstructure)
     const {blogtitle,content,banner,author:{perosnalinfo:{pfplink,username,userid}},pushlishedAt}=blog
-    const {id} = location.state.data
-    const {title:encodeduri} = useParams()
-    const title = decodeURIComponent(encodeduri)
+    const {BlogLink} = useParams()
     const [loading,setLoading] = useState(false)
     
     useEffect(()=>{
         async function fetchblog(){
           setLoading(true)
-            await api.post('/blog',{id,title}).
+            await api.post('/blog',{BlogLink}).
             then((resp)=>{
+              console.log(resp.data.blog)
                 setBlog((prevBlog)=>({
                     ...prevBlog,
-                    blogtitle:resp.data.blog[0].title,
-                    banner:resp.data.blog[0].banner,
-                    content:resp.data.blog[0].content,
-                  pushlishedAt:getdate(resp.data.blog[0].publishedOn),
+                    blogtitle:resp.data.blog.title,
+                    banner:resp.data.blog.banner,
+                    content:resp.data.blog.content,
+                  pushlishedAt:getdate(resp.data.blog.publishedOn),
 
                   author:{perosnalinfo:{
-                    pfplink:resp.data.blog[0].author.pfplink,
-                    username:resp.data.blog[0].author.username,
-                    userid:resp.data.blog[0].author._id,
+                    pfplink:resp.data.blog.author.pfplink,
+                    username:resp.data.blog.author.username,
+                    userid:resp.data.blog.author._id,
                   }}
 
                 }))
@@ -66,7 +63,7 @@ function BlogPage(){
       <div>
         <p className="text-2xl font-bold">{blogtitle}</p>
       </div>
-      <div className="flex items-center cursor-pointer" onClick={() => navigate(`/${username}`, { state: { data: { userid: userid } } })}>
+      <div className="flex items-center cursor-pointer" onClick={() => navigate(`/${username}`)}>
         <div>
           <img src={pfplink} alt="Profile" className="mr-2 w-12 h-12 rounded-full" />
         </div>

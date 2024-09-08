@@ -33,7 +33,7 @@ function Layout() {
           <Route path="/createpost" element={<CreatePost />} />
           <Route path="/edit/:username" element={<Usersinfo />} />
           <Route path="/:username" element={<UserProfile />}></Route>
-          <Route path="/blog/:title" element={<BlogPage />} />
+          <Route path="/blog/:BlogLink" element={<BlogPage />} />
           <Route path="/draft" element={<Draft />} />
           <Route path="/manageblogs" element={<ManageBlogs />}></Route>
           <Route path="/bookmarks" element={<Bookmark />} />
