@@ -38,33 +38,52 @@ function Code({code}){
       </pre>)
 }
 function BlogParser({block}){
-    const {type,data} =block
-    if(type=="paragraph"){
-        return <p dangerouslySetInnerHTML={{__html:data.text}} className="text-xl leading-8"></p>
+  const { type, data } = block;
+  if (type == "paragraph") {
+    return (
+      <p
+        dangerouslySetInnerHTML={{ __html: data.text }}
+        className="text-xl leading-8"
+      ></p>
+    );
+  }
+  if (type == "image") {
+    return <IMG url={data.file.url} caption={data.caption}></IMG>;
+  }
+  if (type == "header") {
+    if (data.level == 2) {
+      return (
+        <h2
+          dangerouslySetInnerHTML={{ __html: data.text }}
+          className="text-2xl font-bold mt-6"
+        ></h2>
+      );
     }
-    if(type=="image"){
-        return <IMG url={data.file.url} caption={data.caption}></IMG>
+    if (data.level == 3) {
+      return (
+        <h3
+          dangerouslySetInnerHTML={{ __html: data.text }}
+          className="text-3xl font-bold  mt-6"
+        ></h3>
+      );
     }
-    if(type=="header"){
-        if(data.level == 2){
-            return <h2 dangerouslySetInnerHTML={{__html:data.text}} className="text-2xl font-bold mt-6"></h2>
-        }
-        if(data.level == 3){
-            return <h3 dangerouslySetInnerHTML={{__html:data.text}} className="text-3xl font-bold  mt-6"></h3>
-        }
-        if(data.level == 4){
-            return <h4 dangerouslySetInnerHTML={{__html:data.text}} className="text-4xl font-bold  mt-6"></h4>
-        }
+    if (data.level == 4) {
+      return (
+        <h4
+          dangerouslySetInnerHTML={{ __html: data.text }}
+          className="text-4xl font-bold  mt-6"
+        ></h4>
+      );
     }
-    if(type=="quote"){
-        return <Quote quote={data.text} caption={data.caption}></Quote>
-    }
-    if(type=="code"){
-        return <Code code={data.code}></Code>
-    }
-    if(type=="list"){
-        return <List style={data.style} items={data.items}></List>
-    }
-
+  }
+  if (type == "quote") {
+    return <Quote quote={data.text} caption={data.caption}></Quote>;
+  }
+  if (type == "code") {
+    return <Code code={data.code}></Code>;
+  }
+  if (type == "list") {
+    return <List style={data.style} items={data.items}></List>;
+  }
 }
 export default BlogParser;

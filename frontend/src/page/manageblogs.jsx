@@ -7,39 +7,45 @@ import { getdate } from "../utils/date"
 import { api } from "../utils/axiosroute"
 
 function ManageBlogs(){
-    const {initialinfo} = useContext(UserContext)
-    const navigate = useNavigate()
-    const {blogs} = initialinfo
-    const {setBlog} = useContext(BlogContext)
-    return (
-      <>
-        <div className="min-h-screen w-full mt-16 p-4 font-display ">
-          <div className="mx-auto max-w-[900px] md:justify-center ">
-            <p className="font-bold text-2xl mb-3 ">Blogs</p>
-            <div className=" border-black border-4 p-4 rounded-md">
-              {!blogs.length ? (
-                <p className="text-xl font-bold">You dont have any blogs</p>
-              ) : (
-                blogs.map((blog, index) => (
-                  <div className=" p-2 mb-2 rounded-md" key={index}>
-                    <div className="flex ">
-                        <div className="flex-1 content-center cursor-pointer" onClick={()=>{
-                        navigate(`/blog/${encodeURIComponent(blog.title)}`,{state:{data:{id:blog._id}}})
-                      }}>
-                      <p className="text-lg font-bold hover:underline" >{blog.title}</p>
-                      <p className="text-lg font-bold  ">{getdate(blog.publishedOn)}</p>
-
-</div>
+  const { initialinfo } = useContext(UserContext);
+  const navigate = useNavigate();
+  const { blogs } = initialinfo;
+  const { setBlog } = useContext(BlogContext);
+  return (
+    <>
+      <div className="min-h-screen w-full mt-16 p-4 font-display ">
+        <div className="mx-auto max-w-[900px] md:justify-center ">
+          <p className="font-bold text-2xl mb-3 ">Blogs</p>
+          <div className=" border-black border-4 p-4 rounded-md">
+            {!blogs.length ? (
+              <p className="text-xl font-bold">You dont have any blogs</p>
+            ) : (
+              blogs.map((blog, index) => (
+                <div className=" p-2 mb-2 rounded-md" key={index}>
+                  <div className="flex ">
+                    <div
+                      className="flex-1 content-center cursor-pointer"
+                      onClick={() => {
+                        navigate(`/blog/${blog.BlogLink}`);
+                      }}
+                    >
+                      <p className="text-lg font-bold hover:underline">
+                        {blog.title}
+                      </p>
+                      <p className="text-lg font-bold  ">
+                        {getdate(blog.publishedOn)}
+                      </p>
+                    </div>
                     <div className="space-x-2 space-y-4 sm:space-y-0 flex flex-col sm:flex-row">
                       <button
                         className="font-bold pt-2 pb-2 pr-4 pl-4 rounded-md hover:bg-black hover:text-white"
                         onClick={() => {
                           const blogbo = {
-                            _id:blog._id,
+                            _id: blog._id,
                             title: blog.title,
                             content: blog.content,
                             banner: blog.banner,
-                            edited:true
+                            edited: true,
                           };
                           setBlog(blogbo);
                           navigate("/createpost");
@@ -81,20 +87,17 @@ function ManageBlogs(){
                       >
                         Delete
                       </button>
-         
                     </div>
-                    </div>
-
-                    <hr className="border-2 border-black mt-2 rounded-md" />
                   </div>
 
-                ))
-              )}
-            </div>
+                  <hr className="border-2 border-black mt-2 rounded-md" />
+                </div>
+              ))
+            )}
           </div>
         </div>
-        <Toaster />
-      </>
-    );
+      </div>
+    </>
+  );
 }
 export default ManageBlogs;

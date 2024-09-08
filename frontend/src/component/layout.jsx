@@ -18,17 +18,17 @@ import { PrivateRoute } from './PrivateRoute'
 function Layout() {
   const authtoken = localStorage.getItem("authtoken");
   const location = useLocation();
-  const noheader = ["/signin","/login","/createpost"]
-  !authtoken?noheader.push("/"):null
+  const noheader = ["/signin", "/login", "/createpost"];
+  !authtoken ? noheader.push("/") : null;
 
   return (
     <>
       {!noheader.includes(location.pathname) && <Header />}
       <Routes>
-        <Route path="/" element={authtoken ? <Home /> : <Signin/>}></Route>
+        <Route path="/" element={authtoken ? <Home /> : <Signin />}></Route>
         <Route path="/signin" element={<Signin />} />
         <Route path="/login" element={<Login />} />
-        <Route element={<PrivateRoute/>}>
+        <Route element={<PrivateRoute />}>
           <Route path="/home" element={<Home />} />
           <Route path="/createpost" element={<CreatePost />} />
           <Route path="/edit/:username" element={<Usersinfo />} />
@@ -37,7 +37,7 @@ function Layout() {
           <Route path="/draft" element={<Draft />} />
           <Route path="/manageblogs" element={<ManageBlogs />}></Route>
           <Route path="/bookmarks" element={<Bookmark />} />
-</Route>
+        </Route>
       </Routes>
     </>
   );

@@ -5,44 +5,45 @@ import { api } from "../utils/axiosroute";
 import { Toaster,toast } from "react-hot-toast";
 import { getdate } from "../utils/date";
 function Draft(){
-    const [draft,setDraft] = useState([])
-    const {setBlog} = useContext(BlogContext)
-    const navigate = useNavigate()
-    useEffect(()=>{
-      const fetchbookmarks= async ()=>{
-        await api.get("/getdrafts").then((resp)=>{
-         
-          setDraft(resp.data.drafts.draft)
-        })
-      }      
-      fetchbookmarks()
-    },[])   
-    return (
-        <>
-<div className="min-h-screen w-full mt-16 p-4 font-display ">
-          <div className="mx-auto max-w-[900px] md:justify-center ">
-            <p className="font-bold text-2xl mb-3 ">Drafts</p>
-            <div className=" border-black border-4 p-4 rounded-md">
-              {!draft.length ? (
-                <p className="text-xl font-bold">You dont have any drafts</p>
-              ) : (
-                draft.map((drafts, index) => (
-                  <div className=" p-2 mb-2 rounded-md" key={index}>
-                    <div className="flex ">
-                        <div className="flex-1 content-center cursor-pointer" >
-                      <p className="text-lg font-bold" >{drafts.title}</p>
-                      <p className="text-lg font-bold  ">{getdate(drafts.publishedOn)}</p>
-</div>
+  const [draft, setDraft] = useState([]);
+  const { setBlog } = useContext(BlogContext);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const fetchbookmarks = async () => {
+      await api.get("/getdrafts").then((resp) => {
+        setDraft(resp.data.drafts.draft);
+      });
+    };
+    fetchbookmarks();
+  }, []);
+  return (
+    <>
+      <div className="min-h-screen w-full mt-16 p-4 font-display ">
+        <div className="mx-auto max-w-[900px] md:justify-center ">
+          <p className="font-bold text-2xl mb-3 ">Drafts</p>
+          <div className=" border-black border-4 p-4 rounded-md">
+            {!draft.length ? (
+              <p className="text-xl font-bold">You dont have any drafts</p>
+            ) : (
+              draft.map((drafts, index) => (
+                <div className=" p-2 mb-2 rounded-md" key={index}>
+                  <div className="flex ">
+                    <div className="flex-1 content-center cursor-pointer">
+                      <p className="text-lg font-bold">{drafts.title}</p>
+                      <p className="text-lg font-bold  ">
+                        {getdate(drafts.publishedOn)}
+                      </p>
+                    </div>
                     <div className="space-x-2 space-y-4 sm:space-y-0 flex flex-col sm:flex-row  ">
                       <button
                         className="font-bold pt-2 pb-2 pr-4 pl-4 rounded-md hover:bg-black hover:text-white"
                         onClick={() => {
                           const blogbo = {
-                            _id:drafts._id,
+                            _id: drafts._id,
                             title: drafts.title,
                             content: drafts.content,
                             banner: drafts.banner,
-                            edited:true
+                            edited: true,
                           };
                           setBlog(blogbo);
                           navigate("/createpost");
@@ -68,8 +69,7 @@ function Draft(){
                                 });
                                 setTimeout(() => {
                                   toast.dismiss("success");
-                                  
-                                  
+
                                   window.location.reload();
                                 }, 500);
                               }
@@ -86,21 +86,17 @@ function Draft(){
                       >
                         Delete
                       </button>
-         
                     </div>
-                    </div>
-
-                    <hr className="border-2 border-black mt-2 rounded-md" />
                   </div>
 
-                ))
-              )}
-            </div>
+                  <hr className="border-2 border-black mt-2 rounded-md" />
+                </div>
+              ))
+            )}
           </div>
         </div>
-        <Toaster />
-      </>
-      
-    ); 
+      </div>
+    </>
+  );
 }
 export default Draft;

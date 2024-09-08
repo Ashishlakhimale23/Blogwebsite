@@ -6,13 +6,17 @@ import { getdate } from "../utils/date";
 import {Toaster,toast} from "react-hot-toast"
 import { api } from "../utils/axiosroute";
 function Usersinfo(){
-  const twittervalidation = Joi.string().pattern(/^https:\/\/twitter\.com\/[A-Za-z0-9_]+$/).required() 
-   const xvalidation =  Joi.string().pattern(/^https:\/\/x\.com\/[A-Za-z0-9_]+$/).required()  
-   const githubvalidation= Joi.string().pattern(/^https:\/\/github\.com\/[A-Za-z0-9_]+$/).required()
-    
+  const twittervalidation = Joi.string()
+    .pattern(/^https:\/\/twitter\.com\/[A-Za-z0-9_]+$/)
+    .required();
+  const xvalidation = Joi.string()
+    .pattern(/^https:\/\/x\.com\/[A-Za-z0-9_]+$/)
+    .required();
+  const githubvalidation = Joi.string()
+    .pattern(/^https:\/\/github\.com\/[A-Za-z0-9_]+$/)
+    .required();
 
-  const { info, setInfo,initialinfo  } =
-    useContext(UserContext);
+  const { info, setInfo, initialinfo } = useContext(UserContext);
   const { email, username, twitter, github, aboutyou, techstack, pfplink } =
     info;
 
@@ -23,32 +27,30 @@ function Usersinfo(){
   const pfpRef = useRef();
 
   useEffect(() => {
-
-async function fetchuserinfo(){
-     await api.get("/getuserinfo").then((response)=>{
-      console.log(response)
-console.log("its not setting the info ")
-      setInfo({
-        
-        _id:response.data.userinfo._id,
-        username: response.data.userinfo.username,
-        pfplink: response.data.userinfo.pfplink,
-        email: response.data.userinfo.email,
-        aboutyou: response.data.userinfo.about,
-        github: response.data.userinfo.github,
-        twitter: response.data.userinfo.twitter,
-        techstack: response.data.userinfo.techstack,
-        draft: response.data.userinfo.draft,
-        joinedOn:getdate(response.data.userinfo.joinedOn)
-      });
-      
-
-    }).catch(err=>console.log(err))
-
+    async function fetchuserinfo() {
+      await api
+        .get("/getuserinfo")
+        .then((response) => {
+          console.log(response);
+          console.log("its not setting the info ");
+          setInfo({
+            _id: response.data.userinfo._id,
+            username: response.data.userinfo.username,
+            pfplink: response.data.userinfo.pfplink,
+            email: response.data.userinfo.email,
+            aboutyou: response.data.userinfo.about,
+            github: response.data.userinfo.github,
+            twitter: response.data.userinfo.twitter,
+            techstack: response.data.userinfo.techstack,
+            draft: response.data.userinfo.draft,
+            joinedOn: getdate(response.data.userinfo.joinedOn),
+          });
+        })
+        .catch((err) => console.log(err));
     }
-    fetchuserinfo()
-    },[])
-      
+    fetchuserinfo();
+  }, []);
+
   useEffect(() => {
     localStorage.setItem("info", JSON.stringify(info));
   }, [info]);
@@ -94,30 +96,24 @@ console.log("its not setting the info ")
   };
 
   const handlepfpchange = async (e) => {
-
     const filename = e.target.files[0];
-    console.log(filename)
     const formData = new FormData();
-    formData.append("file",filename);
-    formData.append("upload_preset",process.env.UPLOAD_PRESET);
-     formData.append("api_key",process.env.API_KEY);
-    
-     
+    formData.append("file", filename);
+    formData.append("upload_preset", process.env.UPLOAD_PRESET);
+    formData.append("api_key", process.env.API_KEY);
+
     const response = await fetch(
       `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_NAME}/image/upload`,
       {
         method: "POST",
         body: formData,
-       
       }
-    )
-   console.log(response) 
+    );
     if (response.ok) {
-     
       const data = await response.json();
       setInfo((prevInfo) => ({ ...prevInfo, pfplink: data.secure_url }));
       pfpRef.current.src = data.secure_url;
-    } 
+    }
   };
 
   const handleChangeAbout = (e) => {
@@ -131,51 +127,48 @@ console.log("its not setting the info ")
   const handlechangeGithub = (e) => {
     setInfo((prevInfo) => ({ ...prevInfo, github: e.target.value }));
   };
-  const handleupdate = async() => {
-    const formdata ={} 
-    formdata.techstack= techstack;
-    if(pfplink!=initialinfo.pfplink){
-      formdata.pfplink = pfplink
+  const handleupdate = async () => {
+    const formdata = {};
+    formdata.techstack = techstack;
+    if (pfplink != initialinfo.pfplink) {
+      formdata.pfplink = pfplink;
     }
     if (aboutyou != initialinfo.aboutyou) {
-      formdata.about= aboutyou;
+      formdata.about = aboutyou;
     }
-    
+
     if (twitter != initialinfo.twitter) {
-      const resulttwitter = twittervalidation.validate(twitter.toLowerCase())
-      const resultx = xvalidation.validate(twitter.toLowerCase()) 
-     //toast leaks 
-    if(!Object.keys(resultx || resulttwitter).includes("error")){
-      formdata.twitter=twitter;
-    }
-    else if(Object.keys(resultx && resulttwitter).includes("error")){
-      return toast.error("check the input field")
-    }
-      
-    }
-    if(github!=initialinfo.github){
-    const result = githubvalidation.validate(github.toLowerCase())
-    if(!Object.keys(result).includes("error")){
-      formdata.github=github;
-    }
-    else if(Object.keys(result).includes("error")){
-      return toast.error("check the input field")
-    }
-
+      const resulttwitter = twittervalidation.validate(twitter.toLowerCase());
+      const resultx = xvalidation.validate(twitter.toLowerCase());
+      //toast leaks
+      if (!Object.keys(resultx || resulttwitter).includes("error")) {
+        formdata.twitter = twitter;
+      } else if (Object.keys(resultx && resulttwitter).includes("error")) {
+        return toast.error("check the input field");
       }
-  console.log(formdata) 
-
-  await api.post("/updateuserinfo",formdata).then((resp)=>{
-    if(resp.data.task==="completed"){
-      window.location.reload()
-    return toast.success("Profile updated")}
-    else{
-      return toast.error("Profile update failed")
     }
-  }).catch(err=>console.error(err))
-}
+    if (github != initialinfo.github) {
+      const result = githubvalidation.validate(github.toLowerCase());
+      if (!Object.keys(result).includes("error")) {
+        formdata.github = github;
+      } else if (Object.keys(result).includes("error")) {
+        return toast.error("check the input field");
+      }
+    }
+    console.log(formdata);
 
-
+    await api
+      .post("/updateuserinfo", formdata)
+      .then((resp) => {
+        if (resp.data.task === "completed") {
+          window.location.reload();
+          return toast.success("Profile updated");
+        } else {
+          return toast.error("Profile update failed");
+        }
+      })
+      .catch((err) => console.error(err));
+  };
 
   return (
     <>
@@ -321,7 +314,6 @@ console.log("its not setting the info ")
           </div>
         </div>
       </div>
-      <Toaster/>
     </>
   );
 }

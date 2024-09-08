@@ -9,11 +9,10 @@ import { api } from "../utils/axiosroute.js";
 
 
 function CreatePost() {
-  
   const { blog, setBlog, texteditor, setTexteditor } = useContext(BlogContext);
-  const {title,content,banner,_id,edited} = blog;
-  const {setAuthToken} = useContext(Authcontext)
-  
+  const { title, content, banner, _id, edited } = blog;
+  const { setAuthToken } = useContext(Authcontext);
+
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -22,21 +21,20 @@ function CreatePost() {
   useEffect(() => {
     setAuthToken(localStorage.getItem("authtoken"));
 
-  
-  const initializeEditor = () => {
+    const initializeEditor = () => {
       if (!texteditor.isReady) {
         const editor = new EditorJS({
           holder: "texteditor",
           data: { blocks: content.length ? content : [] },
-          tools: tool, 
+          tools: tool,
           placeholder: "Write some stories....",
           onChange: async () => {
             const savedBlock = await editor.save();
             setBlog((prevBlog) => ({
               ...prevBlog,
-              content: savedBlock.blocks
+              content: savedBlock.blocks,
             }));
-          }
+          },
         });
 
         editor.isReady.then(() => {
@@ -51,30 +49,29 @@ function CreatePost() {
       if (texteditor.instance) {
         texteditor.instance.destroy();
         setTexteditor({ isReady: false, instance: null });
-        
       }
     };
   }, [setAuthToken, setBlog, texteditor.isReady, texteditor.instance]);
-useEffect(()=>{
-localStorage.setItem('blog', JSON.stringify(blog));
-   return ()=>{
-setBlog((prevBlog) => ({
-                    title: "",
-                    banner: "",
-                    content: [],
-                    _id: "",
-                    edited: false,
-                  }));
-   } 
-},[]) 
+  useEffect(() => {
+    localStorage.setItem("blog", JSON.stringify(blog));
+    return () => {
+      setBlog((prevBlog) => ({
+        title: "",
+        banner: "",
+        content: [],
+        _id: "",
+        edited: false,
+      }));
+    };
+  }, []);
 
   const handletitlechange = (e) => {
-    setBlog({ ...blog, title: e.target.value })
-  
+    setBlog({ ...blog, title: e.target.value });
+
     const textarea = e.target;
-    textarea.style.height = "auto"
-    const scrollheight = textarea.scrollHeight
-    textarea.style.height = `${scrollheight}px`
+    textarea.style.height = "auto";
+    const scrollheight = textarea.scrollHeight;
+    textarea.style.height = `${scrollheight}px`;
   };
 
   const handlebannerinput = async (e) => {
@@ -82,29 +79,29 @@ setBlog((prevBlog) => ({
     const formData = new FormData();
     formData.append("file", filename);
     formData.append("upload_preset", process.env.UPLOAD_PRESET);
-    formData.append("api_key",process.env.API_KEY);
- 
-   const response = await fetch(
-            `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_NAME}/image/upload`,
-            {
-                method: "POST",
-                body: formData,
-            }
-        );
+    formData.append("api_key", process.env.API_KEY);
 
-        if (response.ok) {
-            const data = await response.json();
-            setBlog((prevBlog) => ({ ...prevBlog, banner: data.secure_url }));
-            BlogbannerRef.current.src = data.secure_url;
-        } else {
-            throw new Error("Failed to upload image");
-        }
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_NAME}/image/upload`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      setBlog((prevBlog) => ({ ...prevBlog, banner: data.secure_url }));
+      BlogbannerRef.current.src = data.secure_url;
+    } else {
+      throw new Error("Failed to upload image");
+    }
   };
   const handletitlekeydown = (e) => {
     if (e.keyCode == 13) {
-      e.preventDefault()
+      e.preventDefault();
     }
-  }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -114,23 +111,23 @@ setBlog((prevBlog) => ({
     let state = e.target.id;
     let str = state.toString();
     let result = str === "published";
-    
-    if (!banner.length){
-      return toast.error("upload the blog banner...")
+
+    if (!banner.length) {
+      return toast.error("upload the blog banner...");
     }
     if (!title.length) {
-      return toast.error("upload the blog title...")
+      return toast.error("upload the blog title...");
     }
 
     if (texteditor.isReady) {
       try {
         setLoading(true);
         const savedData = await texteditor.instance.save();
-        console.log(savedData)
+        console.log(savedData);
         if (savedData.blocks.length > 0) {
           setBlog((prevBlog) => ({ ...prevBlog, content: savedData.blocks }));
           console.log(content);
-          if(edited && _id.length){
+          if (edited && _id.length) {
             await api
               .post("/updateblog", {
                 _id,
@@ -156,21 +153,32 @@ setBlog((prevBlog) => ({
                 }, 500);
               })
               .catch((err) => console.log(err));
+          } else {
+            await api
+              .post("/createblog", {
+                title,
+                content: savedData.blocks,
+                result,
+                banner,
+              })
+              .then((response) => {
+                toast.success("Blog created successfully!", { id: "success" });
 
-            }        
-            else{    
-
-           await api.post("/createblog", { title,content:savedData.blocks,result,banner})
-            .then((response) =>{ toast.success("Blog created successfully!",{id:"success"})
-                        
-              setTimeout(() => {
-                toast.dismiss('success');
-                setBlog((prevBlog)=>({...prevBlog ,title:"",banner:"",content:[],_id:"",edited:false}))
-               navigate("/home") 
-              }, 500);
-            })
-            .catch(err => console.log(err));
-                  }   
+                setTimeout(() => {
+                  toast.dismiss("success");
+                  setBlog((prevBlog) => ({
+                    ...prevBlog,
+                    title: "",
+                    banner: "",
+                    content: [],
+                    _id: "",
+                    edited: false,
+                  }));
+                  navigate("/home");
+                }, 500);
+              })
+              .catch((err) => console.log(err));
+          }
         } else {
           return toast.error("Please write some content.");
         }
@@ -178,13 +186,10 @@ setBlog((prevBlog) => ({
         console.error("Error saving or posting blog:", error);
         toast.error("An error occurred. Please try again.");
       } finally {
-         
         setLoading(false);
-       
-       
       }
     }
-  }
+  };
 
   return (
     <>
@@ -215,7 +220,6 @@ setBlog((prevBlog) => ({
             >
               Save draft
             </button>
-            
           </div>
         </header>
 
@@ -227,9 +231,8 @@ setBlog((prevBlog) => ({
             <div className="hover:opacity-80 aspect-video lg:h-[575px]  bg-white border-4 border-black">
               <label htmlFor="uploadbanner">
                 <img
-                  src={!banner?deafultbanner:banner}
+                  src={!banner ? deafultbanner : banner}
                   ref={BlogbannerRef}
-                  
                   className="z-20 w-full h-full"
                 />
                 <input
@@ -258,7 +261,6 @@ setBlog((prevBlog) => ({
           <div id="texteditor" className=" text-xl w-full p-4 "></div>
         </form>
       </div>
-      <Toaster />
     </>
   );
 }

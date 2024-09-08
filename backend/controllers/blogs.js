@@ -80,7 +80,9 @@ export const handlecreateblog=async(req,res)=>{
 export const handlegetblogs=async(req,res)=>{
   await Blog.find({Published:true}).populate("author","username pfplink")
   .then((resp)=>{
-    return res.json({blogs:resp})
+    return res.status(200).json({blogs:resp})
+  }).catch(error=>{
+    return res.status(500).json({message:"internal server error"})
   })
 
 }
@@ -134,9 +136,9 @@ export const handledraftdeletion=async(req,res)=>{
   const userid = req.user;
   await Blog.findOneAndDelete({_id:_id,title:title}).then(async(resp)=>{
     await User.findOneAndUpdate({_id:userid},{$pull:{"draft":_id}}).then((result)=>{
-        return res.json({status:"deleted"})
+        return res.status(200).json({status:"deleted"})
     }).catch((err)=>{
-      return res.json({status:"deleting failed"})
+      return res.status(500).json({status:"deleting failed"})
     })
   })
 }
@@ -145,9 +147,9 @@ export const handleblogdeletion=async(req,res)=>{
   const userid = req.user;
   await Blog.findOneAndDelete({_id:_id,title:title}).then(async(resp)=>{
     await User.findOneAndUpdate({_id:userid},{$pull:{"blogs":_id}}).then((result)=>{
-        return res.json({status:"deleted"})
+        return res.status(200).json({status:"deleted"})
     }).catch((err)=>{
-      return res.json({status:"deleting failed"})
+      return res.status(500).json({status:"deleting failed"})
     })
   })
 }
@@ -155,7 +157,7 @@ export const handleblogdeletion=async(req,res)=>{
 export const handlegetbookmarks=async(req,res)=>{
   const userid=req.user;
   await User.findById({_id:userid}).select("bookmarks").populate("bookmarks","title banner content publishedOn BlogLink").then((resp)=>{
-    return res.json({bookmark:resp})
+    return res.status(200).json({bookmark:resp})
   }).catch(error=>{
     return res.status(500).json({message:"internal server error"})
   })
@@ -177,9 +179,9 @@ await User.findByIdAndUpdate({_id:userid},
       $push:{"bookmarks":blogid}
     }
   ).then(()=>{
-    return res.json({success:id})
+    return res.status(200).json({success:id})
   }).catch((err)=>{
-    return res.json({success:"failed"})
+    return res.status(500).json({success:"failed"})
 
   })
 }
@@ -192,9 +194,9 @@ await User.findByIdAndUpdate({_id:userid},
       $pull:{"bookmarks":blogid}
     }
   ).then(()=>{
-    return res.json({success:id})
+    return res.status(200).json({success:id})
   }).catch((err)=>{
-    return res.json({success:"failed"})
+    return res.status(500).json({success:"failed"})
 
   })
 }
@@ -210,49 +212,46 @@ export const handlegetallblogsanduser=async(req,res)=>{
 }
 
 export const handleblogupdate=async(req,res)=>{
-  const {title,_id,content,result,banner} = req.body
-  const userid = req.user
-  const blog = await Blog.findById({_id:_id})
-  if(result){
-    if(blog.Published){
-      blog.content = content,
-      blog.title=title,
-      blog.banner = banner
-    }
-    else{
-      blog.content = content,
-      blog.title=title,
-      blog.banner = banner
-      blog.Published = result
+  const { title, _id, content, result, banner } = req.body;
+  const userid = req.user;
+  const blog = await Blog.findById({ _id: _id });
+  if (result) {
+    if (blog.Published) {
+      (blog.content = content), (blog.title = title), (blog.banner = banner);
+    } else {
+      (blog.content = content), (blog.title = title), (blog.banner = banner);
+      blog.Published = result;
       //put it in blogs
-      await User.findByIdAndUpdate({_id:userid},{
-        $pull:{"draft":_id},
-        $push:{'blogs':_id}
-      })
-
+      await User.findByIdAndUpdate(
+        { _id: userid },
+        {
+          $pull: { draft: _id },
+          $push: { blogs: _id },
+        }
+      );
+    }
+  } else {
+    if (blog.Published) {
+      blog.Published = result;
+      (blog.content = content), (blog.title = title), (blog.banner = banner);
+      //put it in draft
+      await User.findByIdAndUpdate(
+        { _id: userid },
+        {
+          $pull: { blogs: _id },
+          $push: { draft: _id },
+        }
+      );
+    } else {
+      (blog.content = content), (blog.title = title), (blog.banner = banner);
     }
   }
-  else{
-     if(blog.Published){
-      blog.Published = result
-      blog.content = content,
-      blog.title=title,
-      blog.banner = banner
-      //put it in draft 
-     await User.findByIdAndUpdate({_id:userid},{
-        $pull:{"blogs":_id},
-        $push:{'draft':_id}
-      })
-    }
-    else{
-      blog.content = content,
-      blog.title=title,
-      blog.banner = banner
-    }
-  }
-  await blog.save().then(()=>{
-   return res.json({blog:"Updated"})
-  }).catch(()=> {
-    return res.json({blog:"Update failed"})
-  })
+  await blog
+    .save()
+    .then(() => {
+      return res.status(200).json({ blog: "Updated" });
+    })
+    .catch(() => {
+      return res.status(500).json({ blog: "Update failed" });
+    });
 }

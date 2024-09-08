@@ -8,7 +8,7 @@ import axios from 'axios';
 import Search from './search.jsx';
 import { api } from '../utils/axiosroute.js';
 function Header() {
-  const { logged, setLogged} = useContext(Authcontext);
+  const { logged, setLogged } = useContext(Authcontext);
   const [open, setOpen] = useState(false);
   const { search, setSearch } = useContext(searchpopover);
   const { initialinfo, setInitialinfo } = useContext(UserContext);
@@ -29,7 +29,7 @@ function Header() {
     }
   };
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     if (open || search) {
       document.body.style.overflow = "hidden";
@@ -39,11 +39,10 @@ function Header() {
   }, [open, search]);
 
   useEffect(() => {
-    const authtoken = localStorage.getItem("authtoken")
-    authtoken ? setLogged(true) : setLogged(false) 
+    const authtoken = localStorage.getItem("authtoken");
+    authtoken ? setLogged(true) : setLogged(false);
     async function fetchuserinfo() {
       await api.get("/getuserinfo").then((response) => {
-       
         setInitialinfo({
           _id: response.data.userinfo._id,
           username: response.data.userinfo.username,

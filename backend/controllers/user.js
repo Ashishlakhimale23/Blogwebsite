@@ -82,9 +82,9 @@ export const handleupdateuserinfo=async (req,res)=>{
   const formdata = req.body;
   const user = req.user
   await User.findByIdAndUpdate(user,formdata).then((resp)=>{
-    return res.json({task:"completed"})
+    return res.status(200).json({task:"completed"})
   }).catch(err=>{
-    return res.json({task:"failed"})
+    return res.status(500).json({task:"failed"})
  } )
 
 }

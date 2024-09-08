@@ -72,14 +72,17 @@ api.interceptors.request.use(
 
 // Response interceptor to handle token expiration and refresh
 api.interceptors.response.use(
-  response => response,
-  async error => {
+  (response) => response,
+  async (error) => {
     const originalRequest = error.config;
 
     // Redirect to login if refresh token fails
-    if (error.response.status === 403 && originalRequest.url.includes('/refresh')) {
+    if (
+      error.response.status === 403 &&
+      originalRequest.url.includes("/refresh")
+    ) {
       setTimeout(() => {
-        window.location.href = '/login';
+        window.location.href = "/login";
       }, 500);
       return Promise.reject(error);
     }
@@ -90,10 +93,14 @@ api.interceptors.response.use(
 
       try {
         // Execute refresh token logic using the concurrency handler
-        const newAccessToken = await concurrencyHandler.execute(refreshTokenFunction);
+        const newAccessToken = await concurrencyHandler.execute(
+          refreshTokenFunction
+        );
 
         // If token is refreshed successfully, set the new token in headers
-        api.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
+        api.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${newAccessToken}`;
         originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
 
         // Retry the original request with the new access token
@@ -101,7 +108,7 @@ api.interceptors.response.use(
       } catch (refreshError) {
         // If refresh fails, redirect to login
         setTimeout(() => {
-          window.location.href = '/login';
+          window.location.href = "/login";
         }, 500);
         return Promise.reject(refreshError);
       }

@@ -3,102 +3,102 @@ import {  useNavigate } from "react-router-dom";
 import {Toaster,toast} from "react-hot-toast"
 import joi from "joi"
 import axios from "axios";
-import {Authcontext} from "../context/context.js"
-import { api } from "../utils/axiosroute";
+
 function Signin() {
   const schema = joi.object({
     username: joi.string().alphanum().min(3).max(30).required(),
-    email: joi.string().email({minDomainSegments:2,tlds:{allow:["com","net"]}}),
-    password:joi.string().pattern(new RegExp('^(?=.*[a-zA-Z0-9])(?=.*[!@#$%^&*()_+])[a-zA-Z0-9!@#$%^&*()_+]{3,30}$')),
-    
-    })
+    email: joi
+      .string()
+      .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } }),
+    password: joi
+      .string()
+      .pattern(
+        new RegExp(
+          "^(?=.*[a-zA-Z0-9])(?=.*[!@#$%^&*()_+])[a-zA-Z0-9!@#$%^&*()_+]{3,30}$"
+        )
+      ),
+  });
 
-  const {logged,setLogged} = useContext(Authcontext)    
+  const { logged, setLogged } = useContext(Authcontext);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [file,setFile] = useState(null);
-  
+  const [file, setFile] = useState(null);
 
-  const handelsubmit = useCallback(async (e)=>{
-    e.preventDefault()
+  const handelsubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
 
-      const loading = toast.loading("loading..")
-   try{
-    if(!email.length){
-      return toast.error("Enter  email")
-    }
-    if(!username.length){
-      return toast.error("Enter username")
-    }
-    if(!password.length){
-      return toast.error("Enter password")
-    }
-    
+      const loading = toast.loading("loading..");
+      try {
+        if (!email.length) {
+          return toast.error("Enter  email");
+        }
+        if (!username.length) {
+          return toast.error("Enter username");
+        }
+        if (!password.length) {
+          return toast.error("Enter password");
+        }
 
-    const userInput ={
-      username:username,
-      email:email,
-      password:password,
-     
-    }
+        const userInput = {
+          username: username,
+          email: email,
+          password: password,
+        };
 
-    const result = schema.validate(userInput,{abortEarly:false})
-    if(Object.keys(result).includes("error")){
-      return toast.error("Validation error")
-    }
-    
-    
+        const result = schema.validate(userInput, { abortEarly: false });
+        if (Object.keys(result).includes("error")) {
+          return toast.error("Validation error");
+        }
 
-      await api.post("/signin",userInput)
-    .then((response)=>{
-      
-     if(Object.keys(response.data).includes("token")){
-      localStorage.setItem("refreshtoken",response.data.refreshtoken) 
-      localStorage.setItem("authtoken",response.data.token)
-      setLogged(true) 
-     }
-     
+        await axios
+          .post(`${process.env.BASE_URL}/signin`, userInput)
+          .then((response) => {
+            if (Object.keys(response.data).includes("token")) {
+              localStorage.setItem("refreshtoken", response.data.refreshtoken);
+              localStorage.setItem("authtoken", response.data.token);
+              setLogged(true);
+            }
+          })
+          .catch((err) => {
+            if (
+              Object.values(err.response.data).includes("Already signed up")
+            ) {
+              setEmail("");
+              setUsername("");
+              setPassword("");
+              return toast.error("These Email already exists");
+            }
+            if (
+              Object.values(err.response.data).includes("Internal server error")
+            ) {
+              setEmail("");
+              setUsername("");
+              setPassword("");
+              return toast.error("An Error occured");
+            }
+            toast.error("An error occured");
+            setEmail("");
+            setUsername("");
+            setPassword("");
+          });
+      } catch (err) {
+        return toast.error("An error occured");
+      } finally {
+        return toast.dismiss(loading);
+      }
+    },
 
-    }).catch((err)=>{
-if(Object.values(err.response.data).includes("Already signed up")){
-      setEmail("")
-      setUsername("")
-      setPassword("")
-      return toast.error("These Email already exists")
-     }
-     if(Object.values(err.response.data).includes("Internal server error")){
-
-      setEmail("")
-      setUsername("")
-      setPassword("")
-      return toast.error("An Error occured")
-     }
-      toast.error("An error occured")
-    setEmail("")
-      setUsername("")
-      setPassword("")})
-
-  } catch (err) {
-    return toast.error("An error occured") 
-  }finally{
-    return toast.dismiss(loading)
-  } 
-
-
-  },
-    
-    [username,email,password,schema],
+    [username, email, password, schema]
   );
 
-  
-   
-  useEffect(()=>{
-    if(logged){
-      navigate("/home")
+  useEffect(() => {
+    if (logged) {
+      navigate("/home");
     }
-  },[logged])
+  }, [logged]);
 
   return (
     <>
@@ -113,7 +113,13 @@ if(Object.values(err.response.data).includes("Already signed up")){
             <span className="text-black">better</span>
           </div>
           <label className="text-4xl font-bold block">Join the Community</label>
-          <label htmlFor="">Already have an account ?  <a href="/login" className="underline hover:text-silver"> Log in</a></label>
+          <label htmlFor="">
+            Already have an account ?{" "}
+            <a href="/login" className="underline hover:text-silver">
+              {" "}
+              Log in
+            </a>
+          </label>
           <div className="mt-4  bg-white rounded-lg border-4 border-black shadow-custom">
             <div className="px-3 py-4">
               <label className="block font-semibold text-left">Email</label>
@@ -142,7 +148,7 @@ if(Object.values(err.response.data).includes("Already signed up")){
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-               
+
               <div className="flex justify-between items-baseline">
                 <button
                   type="submit"
@@ -150,14 +156,11 @@ if(Object.values(err.response.data).includes("Already signed up")){
                 >
                   Signup
                 </button>
-                
               </div>
             </div>
-            
           </div>
         </form>
       </div>
-      <Toaster />
     </>
   );
 }

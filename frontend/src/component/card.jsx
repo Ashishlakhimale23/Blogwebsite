@@ -22,8 +22,8 @@ function Card({BlogLink,banner,title,content:Content,author,publishedOn,id}){
     }));
     await api
       .post("/savebookmark", { blogid: id })
-      .then(() =>toast.success("Added to Bookmarks") )
-      .catch(() =>toast.error("Failed to add to bookmarks"));
+      .then(() => toast.success("Added to Bookmarks"))
+      .catch(() => toast.error("Failed to add to bookmarks"));
   };
   const handleremovebookmark = async () => {
     setInitialinfo((prevInfo) => ({
@@ -67,7 +67,7 @@ function Card({BlogLink,banner,title,content:Content,author,publishedOn,id}){
         <div
           className="flex space-x-2 cursor-pointer"
           onClick={() => {
-            navigate(`/${username}`, { state: { data: { userid } } });
+            navigate(`/${username}`);
           }}
         >
           <img src={pfplink} className="h-11 rounded-md hover:opacity-80" />
