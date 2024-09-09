@@ -1,8 +1,8 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import EditorJS from "@editorjs/editorjs"
 import tool from "../utils/tools"
-import { Authcontext, BlogContext } from "../context/context.js";
-import { Toaster, toast } from "react-hot-toast"
+import {BlogContext } from "../context/context.js";
+import { toast } from "react-hot-toast"
 import {useNavigate} from "react-router-dom"
 import deafultbanner from "../img/blog banner.png"
 import { api } from "../utils/axiosroute.js";
@@ -11,7 +11,6 @@ import { api } from "../utils/axiosroute.js";
 function CreatePost() {
   const { blog, setBlog, texteditor, setTexteditor } = useContext(BlogContext);
   const { title, content, banner, _id, edited } = blog;
-  const { setAuthToken } = useContext(Authcontext);
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -19,7 +18,6 @@ function CreatePost() {
   const BlogbannerRef = useRef();
 
   useEffect(() => {
-    setAuthToken(localStorage.getItem("authtoken"));
 
     const initializeEditor = () => {
       if (!texteditor.isReady) {
@@ -51,7 +49,7 @@ function CreatePost() {
         setTexteditor({ isReady: false, instance: null });
       }
     };
-  }, [setAuthToken, setBlog, texteditor.isReady, texteditor.instance]);
+  }, [setBlog, texteditor.isReady, texteditor.instance]);
   useEffect(() => {
     localStorage.setItem("blog", JSON.stringify(blog));
     return () => {
