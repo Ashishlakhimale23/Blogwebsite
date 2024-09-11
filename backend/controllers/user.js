@@ -109,5 +109,5 @@ export const handlerevokthetoken =async(req,res)=>{
 }
 
 export const handlecron=async(req,res)=>{
-    return res.json({message:"Im awake"}).status(200).end()
+    return res.status(200).json({message:"Im awake"})
 }
