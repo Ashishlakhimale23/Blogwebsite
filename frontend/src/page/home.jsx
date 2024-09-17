@@ -1,4 +1,4 @@
-import { useContext, useEffect,useState } from "react";
+import { useContext} from "react";
 import Card from "../component/card";
 import { UserContext } from "../context/context";
 
@@ -7,12 +7,13 @@ function Home () {
   const { initialinfo } = useContext(UserContext);
   return (
     <>
-      <div className="flex w-full h-full justify-center p-8 mt-16 mb-5 sm:p-12 md:p-16 ">
-        <div className="space-y-8 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-8">
+      <div className="flex w-full h-full items-center mt-16  max-w-4xl mx-auto p-4">
           {!initialinfo.blogs ? (
-            <p className="text-4xl font-display font-bold text-black"></p>
+            <p className="text-4xl font-display font-bold text-black">NO BlOGS TO SHOW</p>
           ) : (
             initialinfo.blogs.map((blog, i) => (
+              <>
+              <div>
               <Card
                 key={i}
                 title={blog.title}
@@ -24,10 +25,14 @@ function Home () {
                 id={blog._id}
                 bookmarks={initialinfo.bookmarks}
                 BlogLink={blog.BlogLink}
+
               ></Card>
+              <hr />
+
+</div>
+</>
             ))
           )}
-        </div>
       </div>
     </>
   );

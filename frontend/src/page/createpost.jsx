@@ -192,19 +192,17 @@ function CreatePost() {
   return (
     <>
       <div className="w-full h-full flex flex-col items-center">
-        <header className="w-full flex border-black border-b-4 text-white items-center shadow-md justify-between font-display fixed top-0 bg-silver z-50">
-          <div className="text-xl md:text-[28px] font-bold flex items-center lg:pl-32 space-x-6 grow pl-8  md:justify-start md:pl-10 md:grow-0">
+        <header className="w-full flex border  text-white items-center justify-between h-16  fixed top-0 bg-white z-50">
+          <div className="text-xl sm:text-2xl  font-bold flex items-center lg:pl-32 space-x-6 grow pl-2  md:justify-start md:pl-10 md:grow-0">
             <div className="text-black ">
-              <span className="">Get</span>
-              <span className="">better</span>
-              <span className="">*</span>
+              <span className="">Thoughts</span>
             </div>
           </div>
 
           <div className="space-x-2 lg:space-x-10 lg:pr-28 flex md:pr-10 pr-2 md:space-x-10 text-black items-center">
             <button
               id="published"
-              className=" md:p-4 font-bold md:text-xl items-center hover:bg-black hover:text-white p-1 pt-4 pb-4 "
+              className=" px-4 py-2 rounded-md h-fit border  items-center hover:bg-black hover:text-white  "
               onClick={handlepublish}
               disabled={loading}
             >
@@ -212,7 +210,7 @@ function CreatePost() {
             </button>
             <button
               id="draft"
-              className=" md:p-4 font-bold md:text-xl items-center hover:bg-black hover:text-white p-1 pt-4 pb-4 "
+              className=" px-4 py-2 rounded-md h-fit border  items-center hover:bg-black hover:text-white  "
               onClick={handlepublish}
               disabled={loading}
             >

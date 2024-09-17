@@ -50,13 +50,13 @@ const popoverRef = useRef(null);
   }, [search]);
 
   return (
-    <div className="fixed w-full min-h-screen bg-black/30 flex justify-center font-display p-3 pt-0">
-      <div className="w-[700px] p-10 bg-white rounded-lg mt-3 h-fit max-h-screen overflow-y-scroll no-scrollbar" ref={popoverRef}>
+    <div className="fixed w-full min-h-screen  flex justify-center  p-3 pt-0">
+      <div className="w-[700px] p-10 bg-white rounded-lg mt-3 h-fit max-h-screen overflow-y-scroll no-scrollbar shadow-xl border border-black" ref={popoverRef}>
         <div className="sticky top-0 bg-white z-10 pb-3">
           <input
             type="text"
             value={searchvalue}
-            className="outline-none w-full p-4 border-4 border-black rounded-lg"
+            className="outline-none w-full p-4 border border-black  rounded-lg"
             onChange={(e) => {
               setSearchvalue(e.target.value);
               predictionforblogs(e.target.value);
@@ -103,21 +103,19 @@ const popoverRef = useRef(null);
                     <div
                       className="flex-1 content-center cursor-pointer"
                       onClick={() => {
-                        navigate(`/blog/${encodeURIComponent(bookmarks.title)}`, {
-                          state: { data: { id: bookmarks._id } },
-                        });
+                        navigate(`/blog/${bookmarks.BlogLink}`);
                         setSearch(!search);
                       }}
                     >
-                      <p className="text-lg font-bold hover:underline">
+                      <p className="text-lg text-black  hover:underline">
                         {bookmarks.title}
                       </p>
-                      <p className="text-lg font-bold">
+                      <p className="text-lg text-gray-600">
                         {getdate(bookmarks.publishedOn)}
                       </p>
                     </div>
                   </div>
-                  <hr className="border-2 border-black mt-2 rounded-md" />
+                  <hr className="border-1 mt-2 rounded-md" />
                 </div>
               ))
             )
@@ -133,9 +131,7 @@ const popoverRef = useRef(null);
                   <div
                     className="flex space-x-2"
                     onClick={() => {
-                      navigate(`/${user.username}`, {
-                        state: { data: { userid: user._id } },
-                      })
+                      navigate(`/${user.username}`)
                       setSearch(false)
                     }}
                   >

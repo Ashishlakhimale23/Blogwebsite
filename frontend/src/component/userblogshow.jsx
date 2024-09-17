@@ -15,9 +15,9 @@ function UserBlogShow({
         }}
       >
         <p className="mb-1">{title}</p>
-        <p>written on {getdate(publishedOn)}</p>{" "}
+        <p className="text-base font-normal text-gray-600">written on {getdate(publishedOn)}</p>{" "}
       </div>
-      <hr className="border-2 border-black rounded-full" />
+      <hr className="border border-black rounded-full" />
     </>
   );
 }

@@ -67,7 +67,7 @@ export function UserProfile(){
                   }}
                 >
                   <button
-                    className="mr-3 pr-8 pl-8 p-2 align-middle  bg-silver  border-black border-4 text-black text-xl font-semibold hover:text-white hover:bg-black"
+                    className="mr-3 pr-8 pl-8 p-2 align-middle   border-black border rounded-md text-black text-xl font-semibold hover:text-white hover:bg-black"
                     onClick={() => {
                       navigate(`/edit/${username}`);
                     }}
@@ -79,7 +79,7 @@ export function UserProfile(){
             </div>
           </div>
 
-          <div className="w-full border-4 border-black  rounded-lg p-6 space-y-3 ">
+          <div className="w-full border-2 border-black  rounded-lg p-6 space-y-3 ">
             <div
               className="space-x-2 "
               style={{
@@ -141,11 +141,11 @@ export function UserProfile(){
                   d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z"
                 />
               </svg>
-              <p className="font-display">Member Since {joinedOn}</p>
+              <p className="">Member Since {joinedOn}</p>
             </div>
           </div>
           <div className="wfull h-fit ">
-            <div className="border-4 border-black p-6 mb-3 rounded-lg min-h-44">
+            <div className="border-2 border-black p-6 mb-3 rounded-lg min-h-44">
               <p className="text-xl font-bold mb-2">About Me</p>
               <p className="font-display text-black">
                 {aboutyou
@@ -153,7 +153,7 @@ export function UserProfile(){
                   : "Your bio is empty. Tell the world who you are by writing a short description about you."}
               </p>
             </div>
-            <div className="border-4 border-black p-6 mb-3 rounded-lg min-h-44">
+            <div className="border-2 border-black p-6 mb-3 rounded-lg min-h-44">
               <p className="text-xl font-bold mb-2">My Tech Stack</p>
               <div className="flex font-display text-gray-400">
                 {!techstack
@@ -169,7 +169,7 @@ export function UserProfile(){
               </div>
             </div>
 
-            <div className="border-4 border-black p-6 mb-3 rounded-lg min-h-44">
+            <div className="border-2 border-black p-6 mb-3 rounded-lg min-h-44">
               <p className="text-xl font-bold mb-2">Blogs</p>
               <div className=" font-display text-gray-400">
                 {!blogs

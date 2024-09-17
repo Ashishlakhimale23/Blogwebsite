@@ -100,92 +100,73 @@ function Header() {
   return (
     <>
       <div className=" ">
-        <header className="flex w-full px-2 font-display bg-silver text-black justify-between border-b-4 border-black lg:px-32 md:px-24 sm:px-10 fixed top-0  ">
+        <header className="flex bg-white w-full font-display px-8 h-16 text-black justify-between border-b lg:px-20  sm:px-10 fixed top-0  ">
           <div
-            className="font-bold flex items-center cursor-pointer"
-            onClick={() => {
+            className=" flex font-medium items-center  "
+          >
+            <div className="text-2xl font-bold cursor-pointer"
+             onClick={() => {
               navigate("/home");
             }}
-          >
-            <div className="text-xl md:text-[28px]">
-              <span>Get</span>
-              <span>better</span>
-              <span>*</span>
+            >
+              <span>Thoughts</span>
             </div>
           </div>
-
-          <div className="space-x-2 flex items-center">
-            <button
-              ref={imagesearch}
-              onClick={() => {
-                setSearch(!search);
-              }}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                className="w-6 h-9 text-black font-display font-bold"
+          <div className="flex items-center ">
+            <div className="space-x-4 flex items-center">
+              <button
+                ref={imagesearch}
+                onClick={() => {
+                  setSearch(!search);
+                }}
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  className="w-6 h-9 text-black font-display font-bold"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                  />
+                </svg>
+              </button>
+
+              <button
+                className={`hidden px-5 rounded-lg text-sm  border-2 h-10 items-center text-black sm:block  `}
+                onClick={() => {
+                  navigate("/createpost");
+                }}
+              >
+                Write
+              </button>
+
+              <button
+                ref={image}
+                onClick={() => {
+                  setOpen(!open);
+                }}
+              >
+                <img
+                  src={pfplink}
+                  className="h-10 rounded-full"
+                  style={{ display: logged ? "block" : "none" }}
                 />
-              </svg>
-            </button>
-
-            <button
-              className="hidden p-4 font-bold text-xl items-center hover:bg-black hover:text-white"
-              style={{ display: logged ? "block" : "none" }}
-              onClick={() => {
-                navigate("/createpost");
-              }}
-            >
-              Create Post
-            </button>
-
-            <button
-              className="hidden p-4 font-bold text-xl items-center hover:bg-black hover:text-white"
-              style={{ display: logged ? "none" : "block" }}
-              onClick={() => {
-                navigate("/login");
-              }}
-            >
-              Login
-            </button>
-            <button
-              className="hidden p-4 font-bold text-xl items-center hover:bg-black hover:text-white"
-              style={{ display: logged ? "none" : "block" }}
-              onClick={() => {
-                navigate("/signin");
-              }}
-            >
-              Create Account
-            </button>
-            <button
-              ref={image}
-              onClick={() => {
-                setOpen(!open);
-              }}
-            >
-              <img
-                src={pfplink}
-                className="h-12 rounded-full"
-                style={{ display: logged ? "block" : "none" }}
-              />
-            </button>
+              </button>
+            </div>
           </div>
         </header>
         {open ? (
           <div
-            className={`w-11/12 ml-6 mt-4 mb-4 flex-col fixed bottom-0 right-0 left-0  bg-silver border-4 border-black font-display sm:w-80  sm:left-auto sm:right-4 sm:bottom-auto shadow-custom`}
+            className={`w-11/12 ml-6 mt-4 mb-4 flex-col fixed bottom-0 right-0 left-0 bg-white border-2 border-black rounded-lg sm:w-80  sm:left-auto sm:right-4 sm:bottom-auto `}
           >
             <div ref={popover}>
               <div
-                className="flex space-x-2 hover:bg-black hover:text-white p-4 border-b-2 border-black cursor-pointer"
+                className="flex space-x-2 hover:bg-black hover:text-white p-4  cursor-pointer"
                 onClick={() => {
                   navigate(`/${username}`);
                   setOpen(false);
@@ -203,7 +184,7 @@ function Header() {
               </div>
 
               <div
-                className="flex space-x-2 hover:bg-black hover:text-white border-b-2 border-black p-4 cursor-pointer"
+                className="flex space-x-2 hover:bg-black hover:text-white  p-4 cursor-pointer"
                 onClick={() => {
                   navigate("/draft");
                   setOpen(false);
@@ -227,7 +208,7 @@ function Header() {
                 <p className="">My draft</p>
               </div>
               <div
-                className=" flex space-x-2 hover:bg-black hover:text-white border-b-2 border-black p-4 cursor-pointer"
+                className=" flex space-x-2 hover:bg-black hover:text-white p-4 cursor-pointer"
                 onClick={() => {
                   navigate("/bookmarks");
                   setOpen(false);
@@ -252,7 +233,7 @@ function Header() {
                 <p className=" ">Bookmarks</p>
               </div>
               <div
-                className=" flex space-x-2 hover:bg-black hover:text-white border-b-2 border-black p-4 cursor-pointer"
+                className=" flex space-x-2 hover:bg-black hover:text-white p-4 cursor-pointer"
                 onClick={() => {
                   navigate("/manageblogs");
                   setOpen(false);

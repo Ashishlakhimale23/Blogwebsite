@@ -19,7 +19,7 @@ boxShadow: {
         custom: '8px 8px rgba(0, 0, 0)', // Custom shadow
       },
      fontFamily:{
-      display:["'Baloo Thambi 2'","system-ui"]
+      display:["'Roboto'", "sans-serif"]
      }, 
      colors:{
       "silver":"#c4c4c4"

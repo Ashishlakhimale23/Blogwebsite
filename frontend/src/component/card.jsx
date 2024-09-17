@@ -20,11 +20,15 @@ function Card({BlogLink,banner,title,content:Content,author,publishedOn,id}){
       ...prevInfo,
       bookmarks: [...bookmarks, id],
     }));
+
+
     await api
       .post("/savebookmark", { blogid: id })
       .then(() => toast.success("Added to Bookmarks"))
       .catch(() => toast.error("Failed to add to bookmarks"));
   };
+ 
+  
   const handleremovebookmark = async () => {
     setInitialinfo((prevInfo) => ({
       ...prevInfo,
@@ -37,43 +41,21 @@ function Card({BlogLink,banner,title,content:Content,author,publishedOn,id}){
   };
 
   return (
-    <div className="w-full space-y-4 flex-shrink-0 antialiased font-display border-black border-4 shadow-custom max-w-[600px] flex flex-col min-h-fit">
-      <div
-        className="flex-grow"
-        onClick={() => {
-          navigate(`/blog/${BlogLink}`);
-        }}
-      >
-        <div className="flex-shrink-0">
-          <img
-            src={banner}
-            alt="Descriptive alt text"
-            className="w-full h-60 sm:h-72 object-cover border-b-4 border-black"
-          />
-        </div>
-
-        <div className="pl-2 pr-2 cursor-pointer flex-grow ">
-          <div className="leading-6 line-clamp-4 overflow-ellipsis md:min-h-[100px]">
-            <p className="text-2xl font-bold mb-1">{title}</p>
-            <p
-              className="text-black font-medium hidden sm:block"
-              dangerouslySetInnerHTML={{ __html: des }}
-            ></p>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex justify-between pl-2 pr-2 pb-2 mt-auto">
-        <div
-          className="flex space-x-2 cursor-pointer"
+    <div className="w-full flex flex-col space-y-3 p-4 ">
+      <div className="flex w-full items-center space-x-2 justify-between">
+        <div className="flex space-x-3 cursor-pointer"
           onClick={() => {
             navigate(`/${username}`);
           }}
         >
-          <img src={pfplink} className="h-11 rounded-md hover:opacity-80" />
+          <img
+            src={pfplink}
+            alt={username}
+            className="w-10 h-10 rounded-md object-cover"
+          />
           <div>
             <p className="font-semibold">{username}</p>
-            <p className="text-sm font-display">{date}</p>
+            <p className="text-sm text-gray-500">{date}</p>
           </div>
         </div>
         <div className="flex items-center">
@@ -112,6 +94,25 @@ function Card({BlogLink,banner,title,content:Content,author,publishedOn,id}){
               </svg>
             )}
           </div>
+        </div>
+      </div>
+
+      <div
+        className="flex space-x-4 cursor-pointer"
+        onClick={() => {
+          navigate(`/blog/${BlogLink}`);
+        }}
+      >
+        <div className="flex-grow space-y-2">
+          <p className="text-xl sm:text-2xl font-bold">{title}</p>
+          <p className="text-gray-600 line-clamp-2">{des}</p>
+        </div>
+        <div className="flex-shrink-0">
+          <img
+            src={banner}
+            alt="Blog post banner"
+            className="sm:h-32 h-fit object-cover rounded hidden sm:block"
+          />
         </div>
       </div>
     </div>

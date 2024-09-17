@@ -18,25 +18,28 @@ function Draft(){
   }, []);
   return (
     <>
-      <div className="min-h-screen w-full mt-16 p-4 font-display ">
+      <div className="min-h-screen w-full mt-16 p-4  ">
         <div className="mx-auto max-w-[900px] md:justify-center ">
           <p className="font-bold text-2xl mb-3 ">Drafts</p>
-          <div className=" border-black border-4 p-4 rounded-md">
+          <div className=" border-black border-2 p-4 rounded-md">
             {!draft.length ? (
               <p className="text-xl font-bold">You dont have any drafts</p>
             ) : (
               draft.map((drafts, index) => (
                 <div className=" p-2 mb-2 rounded-md" key={index}>
-                  <div className="flex ">
+
+                  <div className="sm:flex ">
+
                     <div className="flex-1 content-center cursor-pointer">
-                      <p className="text-lg font-bold">{drafts.title}</p>
-                      <p className="text-lg font-bold  ">
+                      <p className="text-lg font-semibold">{drafts.title}</p>
+                      <p className="text-gray-600 ">
                         {getdate(drafts.publishedOn)}
                       </p>
                     </div>
-                    <div className="space-x-2 space-y-4 sm:space-y-0 flex flex-col sm:flex-row  ">
+
+                    <div className="space-x-2 sm:space-y-0 flex  sm:flex-row  ">
                       <button
-                        className="font-bold pt-2 pb-2 pr-4 pl-4 rounded-md hover:bg-black hover:text-white"
+                        className="font-bold pt-2 pb-2 pr-4 pl-4 rounded-md w-full sm:w-fit hover:bg-black hover:text-white"
                         onClick={() => {
                           const blogbo = {
                             _id: drafts._id,
@@ -52,7 +55,7 @@ function Draft(){
                         Edit
                       </button>
                       <button
-                        className="font-bold  pt-2 pb-2 pr-4 pl-4 rounded-md  hover:bg-black hover:text-white"
+                        className="font-bold  pt-2 pb-2 pr-4 pl-4 rounded-md w-full sm:w-fit  hover:bg-black hover:text-white"
                         onClick={async () => {
                           console.log(drafts._id);
                           await api
@@ -89,7 +92,7 @@ function Draft(){
                     </div>
                   </div>
 
-                  <hr className="border-2 border-black mt-2 rounded-md" />
+                  <hr className="border border-black  mt-2 rounded-md" />
                 </div>
               ))
             )}

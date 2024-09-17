@@ -172,7 +172,7 @@ function Usersinfo(){
 
   return (
     <>
-      <div className="p-2 w-full h-full space-y-5 sm:pr-10 sm:pl-10 lg:flex lg:justify-center lg:space-x-5 mt-20 font-display">
+      <div className="p-2 w-full h-full space-y-5 sm:pr-10 sm:pl-10 lg:flex lg:justify-center lg:space-x-5 mt-20 ">
         <div className="lg:w-1/2 p-6 pb-0">
           <div className=" space-y-5 ">
             <div className="space-y-4">
@@ -200,13 +200,13 @@ function Usersinfo(){
                   </div>
                 </div>
                 <label className="font-bold text-lg">User name</label>
-                <p className="p-4 border-4 border-black rounded-md text-lg">
+                <p className="p-4 border-2 border-black rounded-md text-lg">
                   {username}
                 </p>
               </div>
               <div className="space-y-1">
                 <label className="font-bold text-lg">Email</label>
-                <p className="p-4  border-4 border-black rounded-md text-lg">
+                <p className="p-4  border-2 border-black rounded-md text-lg">
                   {email}
                 </p>
               </div>
@@ -214,7 +214,7 @@ function Usersinfo(){
                 <label className="font-bold text-lg">Twitter Profile</label>
                 <input
                   type="text"
-                  className=" p-4 border-4 border-black text-lg outline-none  rounded-lg bg-slate-100 hover:bg-white w-full"
+                  className=" p-4 border-2 border-black text-lg outline-none  rounded-lg bg-slate-100 hover:bg-white w-full"
                   placeholder="https://twitter.com/johndoe"
                   value={twitter}
                   onChange={handlechangeTwitter}
@@ -232,7 +232,7 @@ function Usersinfo(){
                 </label>
                 <input
                   type="text"
-                  className="  p-4 border-4 outline-none border-black text-lg  rounded-lg bg-slate-100 hover:bg-white w-full"
+                  className="  p-4 border-2 outline-none border-black text-lg  rounded-lg bg-slate-100 hover:bg-white w-full"
                   placeholder="https://github.com/johndoe"
                   value={github}
                   onChange={handlechangeGithub}
@@ -241,7 +241,7 @@ function Usersinfo(){
               <div className="relative space-y-1">
                 <label className="font-bold block text-lg">Tech Stack</label>
                 <input
-                  className="w-full p-4 border-4 border-black text-lg outline-none  rounded-lg bg-slate-100 hover:bg-white "
+                  className="w-full p-4 border-2 border-black text-lg outline-none  rounded-lg bg-slate-100 hover:bg-white "
                   placeholder="Search for technologies, topics,more..."
                   value={temptechstack}
                   onChange={handletechstack}
@@ -297,7 +297,7 @@ function Usersinfo(){
                   Profile Bio (About you)
                 </label>
                 <textarea
-                  className="w-full outline-none rounded-lg bg-slate-100 p-4 border-4 border-black hover:bg-white text-lg"
+                  className="w-full outline-none rounded-lg bg-slate-100 p-4 border-2 border-black hover:bg-white text-lg"
                   placeholder="I am a developer from ...."
                   value={aboutyou}
                   rows={8}
@@ -305,7 +305,7 @@ function Usersinfo(){
                 ></textarea>
               </div>
               <button
-                className="p-2 pr-4 pl-4 font-bold bg-silver border-4 border-black hover:bg-black hover:text-white"
+                className="p-2 pr-4 pl-4 font-bold rounded-md  border-2 border-black hover:bg-black hover:text-white"
                 onClick={handleupdate}
               >
                 Update

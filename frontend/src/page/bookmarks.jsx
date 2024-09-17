@@ -16,10 +16,10 @@ function Bookmark(){
   }, []);
   return (
     <>
-      <div className="min-h-screen w-full mt-16 p-4 font-display ">
+      <div className="min-h-screen w-full mt-16 p-4  ">
         <div className="mx-auto max-w-[900px] md:justify-center ">
           <p className="font-bold text-2xl mb-3 ">Bookmarks</p>
-          <div className=" border-black border-4 p-4 rounded-md">
+          <div className=" border-black border-2 p-4 rounded-md">
             {!bookmark.length ? (
               <p className="text-xl font-bold">You dont have any bookmarks</p>
             ) : (
@@ -34,16 +34,15 @@ function Bookmark(){
                         navigate(`/blog/${BlogLink}`);
                       }}
                     >
-                      <p className="text-lg font-bold hover:underline">
+                      <p className="text-lg font-semibold hover:underline">
                         {bookmarks.title}
                       </p>
-                      <p className="text-lg font-bold  ">
+                      <p className=" text-gray-600 ">
                         {getdate(bookmarks.publishedOn)}
                       </p>
                     </div>
                   </div>
-
-                  <hr className="border-2 border-black mt-2 rounded-md" />
+                  <hr className="border border-black mt-2 rounded-md" />
                 </div>
               ))
             )}

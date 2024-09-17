@@ -204,7 +204,7 @@ await User.findByIdAndUpdate({_id:userid},
 export const handlegetallblogsanduser=async(req,res)=>{
   await User.find({}).select("username pfplink joinedOn").then(resp=>{
     const result = resp;
-     Blog.find({Published:true}).select("title banner publishedOn _id").then((resp)=>{
+     Blog.find({Published:true}).select("title banner publishedOn BlogLink").then((resp)=>{
        return res.status(200).json({users:result,blogs:resp})
     }).catch(err=>{return res.status(500).json({message:"failed to retrive the blogs"})})
   }).catch(err=>{return res.status(500).json({message:"failed to retrive the users"})})
