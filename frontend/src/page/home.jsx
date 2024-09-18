@@ -9,7 +9,7 @@ function Home () {
     <>
       <div className="flex w-full h-full items-center mt-16  max-w-4xl mx-auto p-4">
           {!initialinfo.blogs ? (
-            <p className="text-4xl font-display font-bold text-black">NO BlOGS TO SHOW</p>
+            <p className="text-4xl  font-bold text-black">NO BlOGS TO SHOW</p>
           ) : (
             initialinfo.blogs.map((blog, i) => (
               <>

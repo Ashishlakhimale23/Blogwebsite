@@ -179,9 +179,9 @@ await User.findByIdAndUpdate({_id:userid},
       $push:{"bookmarks":blogid}
     }
   ).then(()=>{
-    return res.status(200).json({success:id})
+    return res.status(200).json({success:blogid})
   }).catch((err)=>{
-    return res.status(500).json({success:"failed"})
+    return res.status(500).json({failed:blogid})
 
   })
 }
@@ -194,9 +194,9 @@ await User.findByIdAndUpdate({_id:userid},
       $pull:{"bookmarks":blogid}
     }
   ).then(()=>{
-    return res.status(200).json({success:id})
+    return res.status(200).json({success:blogid})
   }).catch((err)=>{
-    return res.status(500).json({success:"failed"})
+    return res.status(500).json({failed:blogid})
 
   })
 }

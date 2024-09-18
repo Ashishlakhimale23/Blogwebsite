@@ -36,8 +36,15 @@ function Card({BlogLink,banner,title,content:Content,author,publishedOn,id}){
     }));
     await api
       .post("/removebookmark", { blogid: id })
-      .then((resp) => toast.success("Removed from Bookmarks"))
-      .catch((err) => toast.error("Failed to remove from Bookmards"));
+      .then((resp) => {
+        if(Object.keys(resp.data).includes("success")){
+             return toast.success("Removed from Bookmarks")
+        }else{
+          return toast.error("Failed to remove ")
+        }
+      }
+    )
+      .catch((err) => toast.error("Failed to remove from Bookmarks helllo"));
   };
 
   return (
