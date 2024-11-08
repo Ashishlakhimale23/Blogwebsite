@@ -5,97 +5,74 @@ import {RemoveAllTheSpace ,RemoveExtraSpace} from "../Utils/FilterOuThespaces.js
 
 export const handlecreateblog=async(req,res)=>{
   const userid = req.user;
-  let {title,content, result, banner } = req.body;
-  if (!banner.length) {
-    return res.status(403).json({ error: "You must add banner to the blog" });
-  }
-  if (!title.length) {
-    return res.status(403).json({ error: "You must add title to the blog" });
-  }
-  if (!content.length) {
-    return res.status(403).json({ error: "No content provided" });
-  }
-  try{
-  let BlogTitle = RemoveAllTheSpace(title)
-  let titleNoSpaces = RemoveExtraSpace(title)
-  const TitleCount =await Blog.countDocuments({title:titleNoSpaces})
-  let BlogTitleWithCount = TitleCount ? BlogTitle + TitleCount : BlogTitle
-  const BlogTitleCount = await Blog.countDocuments({BlogLink:BlogTitleWithCount})
-  let Count = BlogTitleCount ? TitleCount  + BlogTitleCount : BlogTitleCount
-  BlogTitle = BlogTitleCount ? BlogTitle+Count : BlogTitle
+let { title = '', content = '', result, banner = '' } = req.body;
 
-  let blog = new Blog({
-    title:titleNoSpaces,
-    BlogLink:BlogTitle,
+
+if (!banner.length) {
+  return res.status(400).json({ error: "You must add a banner to the blog" });
+}
+if (!title.length) {
+  return res.status(400).json({ error: "You must add a title to the blog" });
+}
+if (!content.length) {
+  return res.status(400).json({ error: "No content provided" });
+}
+
+try {
+
+  const titleNoSpaces = RemoveExtraSpace(title);
+  let BlogTitle = RemoveAllTheSpace(title);
+
+  const TitleCount = await Blog.countDocuments({ title: titleNoSpaces });
+  BlogTitle += TitleCount ? TitleCount : '';
+
+  const BlogTitleCount = await Blog.countDocuments({ BlogLink: BlogTitle });
+  const Count = BlogTitleCount ? BlogTitleCount : 0;
+  BlogTitle += Count ? Count : '';
+
+  
+  const blog = new Blog({
+    title: titleNoSpaces,
+    BlogLink: BlogTitle,
     content,
     banner,
     author: userid,
     Published: result,
   });
-  blog
-    .save()
-    .then((blogs) => {
-      if (result) {
-        User.findByIdAndUpdate(
-          { _id: userid },
-          {
-            $push: { blogs: blogs._id },
-          }
-        )
-          .then((user) => {
-            return res.status(200).json({ status: "done" });
-          })
-          .catch((err) => {
-            return res
-              .status(500)
-              .json({ error: "failed to update the blog post" });
-          });
-      } else {
-        User.findByIdAndUpdate(
-          { _id: userid },
-          {
-            $push: { draft: blogs._id },
-          }
-        )
-          .then((user) => {
-            return res.status(200).json({ status: "done" });
-          })
-          .catch((err) => {
-            return res
-              .status(500)
-              .json({ error: "failed to update the blog post" });
-          });
-      }
-    })
-    .catch((err) => {
-      return res.status(500).json({ error: "failed to upload the blog" });
-    });
-}catch(error){
-  return res.status(500).json({message:'internal server error'})
+
+  await blog.save();
+
+
+  const updateField = result ? { blogs: blog._id } : { draft: blog._id };
+  await User.findByIdAndUpdate(
+    { _id: userid },
+    { $push: updateField }
+  );
+
+  return res.status(200).json({ status: "done" });
+
+} catch (error) {
+  console.error(error); 
+  return res.status(500).json({ message: 'Internal server error' });
 }
+
 }
     
 
 
 export const handlegetblogs=async(req,res)=>{
+  const userid = req.user 
+  const bookmarks = await User.findById(userid).select('bookmarks')
   const response = await Blog.find({Published:true}).populate("author","username pfplink")
   if(!response){
     return res.status(500).json({message:"internal server error"})
   }
-  return res.status(200).json({blogs:response})
+  return res.status(200).json({blogs:response,bookmarks:bookmarks})
 }
 
 export const handlegetuserinfo = async (req,res)=>{
   const userid = req.user
- 
-  const response = await User.findById(userid).select("username email pfplink  about twitter github techstack blogs draft joinedOn bookmarks").populate({
-    path:"blogs",
-    select:"title content banner publishedOn BlogLink author",
-    populate:{
-      path:"author",
-      select:"username pfplink"
-    }
-  })
+  const response = await User.findById(userid).select("username pfplink")
   if(!response){
     return res.status(500).json({message:"internal server error"})
 
@@ -105,7 +82,8 @@ export const handlegetuserinfo = async (req,res)=>{
 }
 
 export const handlegetotheruserinfo = async (req,res)=>{
-  const {Username} = req.body;
+  const Username = req.query.Username;
+  console.log(Username)
   const response = await User.findOne({username:Username}).select("username email pfplink about twitter github techstack joinedOn blogs").populate("blogs","title publishedOn BlogLink")
   if(!response){
     return res.status(500).json({message:"internal server error"})
@@ -115,7 +93,7 @@ export const handlegetotheruserinfo = async (req,res)=>{
 }
 
 export const handlegetpraticularblog=async (req,res)=>{
-  const {BlogLink} = req.body;
+  const BlogLink = req.query.BlogLink;
   
   const response = await Blog.findOne({
     BlogLink:BlogLink
@@ -129,25 +107,28 @@ export const handlegetpraticularblog=async (req,res)=>{
 }
 
 export const handledraftdeletion=async(req,res)=>{
-  const {_id} = req.body;
+  const {_id} = req.query;
   const userid = req.user;
+  console.log(_id)
   try{
   const check = await User.findOne({_id:userid},{draft:_id})
+  console.log("check",check.draft)
   if(!check){
     return res.status(401).json({message:"blog doesnt belong to you"})
   }
-  const deleteCompletely= Blog.findByIdAndDelete(_id)
+  const deleteCompletely= await Blog.findByIdAndDelete(_id)
   if(!deleteCompletely){
     return res.status(500).json({message:"error occured while deleting"});
   }
 
-  check.draft = check.draft.filter((id)=>id.toString()!=_id.toString());
-  const Done = await check.save();
+
+  const Done = await User.findOneAndUpdate({_id:userid},{$pull:{draft:_id}});
+  console.log(Done)
   if(!Done){
     return res.status(500).json({message:"error while deleting the draft"})
   }
 
-  return res.status(200).json({message:'successfully deleted'})
+  return res.status(200).json({message:'deleted'})
 
   }catch(error){
     return res.status(500).json({message:"internal server error"})
@@ -155,7 +136,7 @@ export const handledraftdeletion=async(req,res)=>{
    
 }
 export const handleblogdeletion=async(req,res)=>{
-  const {_id} = req.body;
+  const {_id} = req.query;
   const userid = req.user;
   try{
   const check = await User.findOne({_id:userid},{blogs:_id})
@@ -163,14 +144,12 @@ export const handleblogdeletion=async(req,res)=>{
     return res.status(401).json({message:"blog doesnt belong to you"})
   }
   await User.updateMany({blogs:_id},{$pull:{blogs:_id}})
-  const deleteCompletely= Blog.findByIdAndDelete(_id)
+  const deleteCompletely= await Blog.findByIdAndDelete(_id)
 
   if(!deleteCompletely){
     return res.status(500).json({message:"error occured while deleting"});
   }
-
-  check.blogs = check.blogs.filter((id)=>id.toString()!=_id.toString());
-  const Done = await check.save();
+  const Done = await User.findOneAndUpdate({_id:userid},{$pull:{blogs:_id}})
   if(!Done){
     return res.status(500).json({message:"error while deleting the blogs"})
   }
@@ -202,7 +181,7 @@ export const handlegetdrafts=async(req,res)=>{
   const userid=req.user;
 
   try{
-  const response = await User.findById({_id:userid}).select("draft").populate("draft","title banner content publishedOn BlogLink")
+  const response = await User.findById({_id:userid}).select("draft").populate("draft","title banner publishedOn BlogLink content")
   if(!response){
     return res.status(200).json({drafts:response})
   }
@@ -236,6 +215,7 @@ export const handleremovebookmark=async(req,res)=>{
   const userid = req.user
 
   try{
+
   const response = await User.findByIdAndUpdate({_id:userid},
     {
       $pull:{"bookmarks":blogid}
@@ -265,11 +245,16 @@ export const handlegetallblogsanduser=async(req,res)=>{
 
 export const handleblogupdate=async(req,res)=>{
   const { title, _id, content, result, banner } = req.body;
+  console.log(req.body)
   const userid = req.user;
   const blog = await Blog.findById({ _id: _id });
-  if (result) {
+  if(!blog){
+    return res.status(400).json({message:"blog doesnt exists"})
+  }
+  try{
+if (result) {
     if (blog.Published) {
-      (blog.content = content), (blog.title = title), (blog.banner = banner);
+      blog.content = content, blog.title = title, blog.banner = banner;
     } else {
       (blog.content = content), (blog.title = title), (blog.banner = banner);
       blog.Published = result;
@@ -303,7 +288,28 @@ export const handleblogupdate=async(req,res)=>{
     .then(() => {
       return res.status(200).json({ blog: "Updated" });
     })
-    .catch(() => {
+    .catch((err) => {
+      console.log(err)
       return res.status(500).json({ blog: "Update failed" });
     });
+
+  }catch(error){
+    console.log(error)
+  }
+  
+}
+
+export const handlegetuserblogs = async(req,res)=>{
+  const userid = req.user
+  try{
+  const response = await User.findById({_id:userid}).select("blogs").populate("blogs","title banner publishedOn BlogLink content")
+  if(!response){
+    return res.status(200).json({blogs:response})
+  }
+  return res.status(200).json({blogs:response})
+  }catch(error){
+    return res.status(500).json({message:"internal server error"})
+  } 
+
+
 }
