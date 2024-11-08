@@ -3,7 +3,6 @@ import BlogProvider from './context/blogcontent'
 import AuthProvider from './context/AuthProvider'
 import Layout from './component/layout'
 import { UserInfoProvider } from './context/UserInfoProvider';
-import { SearchContentProvider } from './context/SearchContentProvider';
 import SearchProvider from './context/SearchProvider';
 import { Toaster } from 'react-hot-toast';
 
@@ -16,7 +15,6 @@ function App() {
     <>
       <Router>
         <SearchProvider>
-          <SearchContentProvider>
             <BlogProvider>
               <UserInfoProvider>
                 <AuthProvider>
@@ -24,7 +22,6 @@ function App() {
                 </AuthProvider>
               </UserInfoProvider>
             </BlogProvider>
-          </SearchContentProvider>
         </SearchProvider>
       </Router>
       <Toaster/>

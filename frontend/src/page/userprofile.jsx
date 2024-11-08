@@ -1,18 +1,34 @@
 import { useContext, useEffect, useState } from "react"
 import {UserContext} from "../context/context"
-import { useLocation, useNavigate, useParams } from "react-router-dom"
+import {  useNavigate, useParams } from "react-router-dom"
 import {getdate} from "../utils/date"
 import { api } from "../utils/axiosroute"
 import UserBlogShow from "../component/userblogshow"
-import { ProfileSkeleton } from "../component/ProfileSkeleton"
+import { Github, Twitter, Code2, CalendarDays, User2, BookOpen } from 'lucide-react';
+import { UserProfileSkeleton } from "../component/UserProfileSkeleton"
+
 export function UserProfile(){
+const UserInfo ={
+  _id:"",
+  username:"",
+  email:"",
+  pfplink:"",
+  aboutyou:"",
+  github:"",
+  twitter:"",
+  techstack:[],
+  blogs:[],
+  draft:[],
+  joinedOn:"",
+  bookmarks:[]
+}
   const navigate = useNavigate();
   const { username: Username } = useParams();
   const [loading, setLoading] = useState(false);
-  const { info, setInfo, initialinfo } = useContext(UserContext);
-  const { username: usersusername } = initialinfo;
-
-  const {
+  const {info} = useContext(UserContext)
+  const {username :owner} = info
+  const [userinfo,setUserinfo] = useState(UserInfo)
+    const {
     username,
     pfplink,
     aboutyou,
@@ -21,15 +37,16 @@ export function UserProfile(){
     techstack,
     blogs,
     joinedOn,
-  } = info;
+  } = userinfo;
+  
   useEffect(() => {
     async function fetchuserinfo() {
       setLoading(true);
       await api
-        .post("/getotheruserinfo", { Username })
+        .get("/getotheruserinfo",{params:{Username}})
         .then((response) => {
-          setInfo({
-            ...info,
+           setUserinfo({
+            ...userinfo,
             username: response.data.userinfo.username,
             pfplink: response.data.userinfo.pfplink,
             email: response.data.userinfo.email,
@@ -40,7 +57,8 @@ export function UserProfile(){
             blogs: response.data.userinfo.blogs,
             joinedOn: getdate(response.data.userinfo.joinedOn),
           });
-          setLoading(false);
+          setLoading(false); 
+          
         })
         .catch((err) => console.log(err));
     }
@@ -49,144 +67,135 @@ export function UserProfile(){
   }, [Username]);
 
   if (loading) {
-    return <ProfileSkeleton />;
+    return <UserProfileSkeleton/>
   }
 
   return (
-    <>
-      <div className="w-full h-full p-10 pl-5 pr-5  font-display mt-16 md:p-16 ">
-        <div className="space-y-8 max-w-4xl  lg:flex-row lg:justify-center lg:items-center mx-auto ">
-          <div className="w-full h-fit space-y-3 md:flex ">
-            <div className="md:flex md:items-center  md:space-x-3 w-full">
-              <img src={pfplink} alt="" className="w-28 h-28 rounded-full" />
-              <div className="lg:flex lg:justify-between w-full">
-                <p className="text-2xl font-display font-bold ">{username}</p>
-                <div
-                  style={{
-                    display: username === usersusername ? "block" : "none",
-                  }}
+    <div className="min-h-screen bg-zinc-900 text-zinc-100 mt-20 font-display">
+      <div className="max-w-4xl mx-auto px-4 py-5 space-y-8">
+        <div className="relative">
+          <div className="absolute inset-0 h-32 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl -z-10" />
+          
+          <div className="flex flex-col items-center space-y-6 md:flex-row md:space-x-8 pt-8 px-6">
+            <img 
+              src={pfplink} 
+              alt={username} 
+              className="w-32 h-32 rounded-full ring-4 ring-zinc-700 ring-offset-4 ring-offset-zinc-900 shadow-xl object-cover"
+            />
+            <div className="flex flex-col items-center md:items-start space-y-4">
+              <h1 className="text-3xl font-bold text-white tracking-tight">{username}</h1>
+              {username===owner  && (
+                <button
+                  onClick={() => navigate(`/edit/${username}`)}
+                  className="px-6 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-zinc-100 
+                           transition duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl"
                 >
-                  <button
-                    className="mr-3 pr-8 pl-8 p-2 align-middle   border-black border rounded-md text-black text-xl font-semibold hover:text-white hover:bg-black"
-                    onClick={() => {
-                      navigate(`/edit/${username}`);
-                    }}
-                  >
-                    Edit
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="w-full border-2 border-black  rounded-lg p-6 space-y-3 ">
-            <div
-              className="space-x-2 "
-              style={{
-                display: github.length || twitter.length ? "flex" : "none",
-              }}
-            >
-              <div className="w-fit ">
-                <a href={twitter}>
-                  <button
-                    className="rounded-full p-2  hover:bg-gray-300 "
-                    style={{ display: twitter ? "block" : "none" }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      enable-background="new 0 0 1668.56 1221.19"
-                      viewBox="0 0 1668.56 1221.19"
-                      id="twitter-x"
-                      className="h-4"
-                    >
-                      <path
-                        d="M283.94,167.31l386.39,516.64L281.5,1104h87.51l340.42-367.76L984.48,1104h297.8L874.15,558.3l361.92-390.99
-		h-87.51l-313.51,338.7l-253.31-338.7H283.94z M412.63,231.77h136.81l604.13,807.76h-136.81L412.63,231.77z"
-                        transform="translate(52.39 -25.059)"
-                      ></path>
-                    </svg>
-                  </button>
-                </a>
-              </div>
-              <div className="w-fit">
-                <a href={github}>
-                  <button
-                    className="rounded-full p-2 hover:bg-gray-300"
-                    style={{ display: github ? "block" : "none" }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 16 16"
-                      id="github"
-                      className="h-4"
-                    >
-                      <path d="M7.999 0C3.582 0 0 3.596 0 8.032a8.031 8.031 0 0 0 5.472 7.621c.4.074.546-.174.546-.387 0-.191-.007-.696-.011-1.366-2.225.485-2.695-1.077-2.695-1.077-.363-.928-.888-1.175-.888-1.175-.727-.498.054-.488.054-.488.803.057 1.225.828 1.225.828.714 1.227 1.873.873 2.329.667.072-.519.279-.873.508-1.074-1.776-.203-3.644-.892-3.644-3.969 0-.877.312-1.594.824-2.156-.083-.203-.357-1.02.078-2.125 0 0 .672-.216 2.2.823a7.633 7.633 0 0 1 2.003-.27 7.65 7.65 0 0 1 2.003.271c1.527-1.039 2.198-.823 2.198-.823.436 1.106.162 1.922.08 2.125.513.562.822 1.279.822 2.156 0 3.085-1.87 3.764-3.652 3.963.287.248.543.738.543 1.487 0 1.074-.01 1.94-.01 2.203 0 .215.144.465.55.386A8.032 8.032 0 0 0 16 8.032C16 3.596 12.418 0 7.999 0z"></path>
-                    </svg>
-                  </button>
-                </a>
-              </div>
-            </div>
-            <div className="space-x-2 p-1 flex">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="size-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z"
-                />
-              </svg>
-              <p className="">Member Since {joinedOn}</p>
-            </div>
-          </div>
-          <div className="wfull h-fit ">
-            <div className="border-2 border-black p-6 mb-3 rounded-lg min-h-44">
-              <p className="text-xl font-bold mb-2">About Me</p>
-              <p className="font-display text-black">
-                {aboutyou
-                  ? aboutyou
-                  : "Your bio is empty. Tell the world who you are by writing a short description about you."}
-              </p>
-            </div>
-            <div className="border-2 border-black p-6 mb-3 rounded-lg min-h-44">
-              <p className="text-xl font-bold mb-2">My Tech Stack</p>
-              <div className="flex font-display text-gray-400">
-                {!techstack
-                  ? null
-                  : techstack.map((tech, index) => (
-                      <div
-                        key={index}
-                        className="w-fit  items-center p-1 pr-2 pl-2 ring-1 hover:bg-blue-100 ring-blue-700 m-1 text-blue-600 rounded-2xl  "
-                      >
-                        <p>{tech} </p>
-                      </div>
-                    ))}
-              </div>
-            </div>
-
-            <div className="border-2 border-black p-6 mb-3 rounded-lg min-h-44">
-              <p className="text-xl font-bold mb-2">Blogs</p>
-              <div className=" font-display text-gray-400">
-                {!blogs
-                  ? null
-                  : blogs.map((blog, index) => (
-                      <UserBlogShow
-                        key={index}
-                        title={blog.title}
-                        BlogLink={blog.BlogLink}
-                        publishedOn={blog.publishedOn}
-                      />
-                    ))}
-              </div>
+                  <User2 className="w-4 h-4" />
+                  <span>Edit Profile</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
+
+        <div className="flex justify-center space-x-4">
+          {twitter && (
+            <a 
+              href={twitter}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-3 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition group"
+            >
+              <Twitter className="w-5 h-5 text-blue-400 group-hover:text-blue-300" />
+            </a>
+          )}
+          {github && (
+            <a 
+              href={github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-3 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition group"
+            >
+              <Github className="w-5 h-5 text-zinc-400 group-hover:text-zinc-300" />
+            </a>
+          )}
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-xl p-5 flex items-center space-x-4 hover:bg-zinc-800 transition">
+            <div className="p-3 bg-zinc-700/50 rounded-lg">
+              <CalendarDays className="w-6 h-6 text-blue-400" />
+            </div>
+            <div>
+              <p className="text-sm text-zinc-400 mb-1">Member Since</p>
+              <p className="text-zinc-100">{joinedOn}</p>
+            </div>
+          </div>
+
+          <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-xl p-5 flex items-center space-x-4 hover:bg-zinc-800 transition">
+            <div className="p-3 bg-zinc-700/50 rounded-lg">
+              <Code2 className="w-6 h-6 text-purple-400" />
+            </div>
+            <div>
+              <p className="text-sm text-zinc-400 mb-1">Tech Stack</p>
+              <p className="text-zinc-100">{techstack?.length || 0} Technologies</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-xl p-6 space-y-4">
+          <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+            <User2 className="w-5 h-5 text-blue-400" />
+            About Me
+          </h2>
+          <p className="text-zinc-300 leading-relaxed">
+            {aboutyou || "Your bio is empty. Tell the world who you are by writing a short description about you."}
+          </p>
+        </div>
+
+        <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-xl p-6 space-y-4">
+          <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+            <Code2 className="w-5 h-5 text-purple-400" />
+            My Tech Stack
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {techstack?.length ? (
+              techstack.map((tech, index) => (
+                <span 
+                  key={index}
+                  className="px-4 py-2 bg-zinc-700/50 text-zinc-100 rounded-lg text-sm hover:bg-zinc-700 transition"
+                >
+                  {tech}
+                </span>
+              ))
+            ) : (
+              <p className="text-zinc-500">No tech stack added yet.</p>
+            )}
+          </div>
+        </div>
+
+        <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-xl p-6 space-y-4">
+          <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-green-400" />
+            Blogs
+          </h2>
+          <div className="space-y-4">
+            {blogs?.length ? (
+              blogs.map((blog, index) => (
+                <UserBlogShow
+                  key={index}
+                  title={blog.title}
+                  BlogLink={blog.BlogLink}
+                  publishedOn={blog.publishedOn}
+                />
+              ))
+            ) : (
+              <p className="text-zinc-500">No blogs published yet.</p>
+            )}
+          </div>
+        </div>
       </div>
-    </>
+    </div>
   );
-}
+};
+

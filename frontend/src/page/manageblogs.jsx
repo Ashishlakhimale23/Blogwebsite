@@ -1,103 +1,120 @@
-import { useContext } from "react"
+import { useContext, useState,useEffect } from "react"
 import { Toaster,toast } from "react-hot-toast"
 import { BlogContext, UserContext } from "../context/context"
 import { useNavigate } from "react-router-dom"
 import { getdate } from "../utils/date"
-
+import { Trash2, Edit } from 'lucide-react';
 import { api } from "../utils/axiosroute"
 
 function ManageBlogs(){
-  const { initialinfo } = useContext(UserContext);
   const navigate = useNavigate();
-  const { blogs } = initialinfo;
   const { setBlog } = useContext(BlogContext);
+  const [blogs,setBlogs] = useState([])
+  const [loading,setLoading] = useState(true)
+
+ useEffect(() => {
+    const fetchblogs = async () => {
+      const response = await api.get("/getuserblogs")
+      console.log(response)
+      if(response.status == 200){
+        setBlogs(response.data.blogs.blogs)
+        setLoading(false)
+      }
+    };
+    fetchblogs();
+  }, []);
+
+  const handleEdit = (e,drafts) =>{
+    e.stopPropagation()
+    const blogbo = {
+      _id: drafts._id,
+      title: drafts.title,
+      content: drafts.content,
+      banner: drafts.banner,
+      edited: true,
+    };
+    setBlog(blogbo);
+    navigate("/createpost");
+  }
+
+  const handleDelete = async(e,drafts)=>{
+    e.stopPropagation()
+    try{
+    const resp = await api.delete("/deleteblog",{
+      params:{
+        _id:drafts._id
+      }
+      })
+    if(resp.status ===200){
+      const filter = blogs.filter((blog)=>blog._id!==drafts._id)
+      setBlogs(filter)
+      toast.success('Deleted')
+    }
+    else{
+      return toast.error("Deletion failed")
+    }
+    }catch(error){
+      return toast.error("internal server error")
+    }
+  }
+  
+if(loading){
+    return (
+      <div className="p-10 animate-shimmer bg-gradient-to-r max-w-3xl mx-auto mt-24 rounded-md from-zinc-500/5 via-zinc-500/10 to-zinc-500/5 bg-[length:400%_100%]">
+      </div>
+    )
+  }
   return (
-    <>
-      <div className="min-h-screen w-full mt-16 p-4 ">
-        <div className="mx-auto max-w-[900px] md:justify-center ">
-          <p className="font-bold text-2xl mb-3 ">Blogs</p>
-          <div className=" border-black border-2 p-4 rounded-md">
-            {!blogs.length ? (
-              <p className="text-xl font-bold">You dont have any blogs</p>
-            ) : (
-              blogs.map((blog, index) => (
-                <div className=" p-2 mb-2 rounded-md" key={index}>
-                  <div className="sm:flex ">
-                    <div
-                      className="flex-1 content-center cursor-pointer"
-                      onClick={() => {
-                        navigate(`/blog/${blog.BlogLink}`);
-                      }}
-                    >
-                      <p className="text-lg font-semibold hover:underline">
-                        {blog.title}
-                      </p>
-                      <p className="text-gray-600 ">
-                        {getdate(blog.publishedOn)}
-                      </p>
-                    </div>
-                    <div className="space-x-2  sm:space-y-0 flex  sm:flex-row">
-                      <button
-                        className="font-bold pt-2 w-full sm:w-fit pb-2 pr-4 pl-4 rounded-md hover:bg-black hover:text-white"
-                        onClick={() => {
-                          const blogbo = {
-                            _id: blog._id,
-                            title: blog.title,
-                            content: blog.content,
-                            banner: blog.banner,
-                            edited: true,
-                          };
-                          setBlog(blogbo);
-                          navigate("/createpost");
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="font-bold  pt-2 pb-2 pr-4 w-full sm:w-fit pl-4 rounded-md  hover:bg-black hover:text-white"
-                        onClick={async () => {
-                          await api
-                            .post("/deleteblog", {
-                              _id: blog._id,
-                              title: blog.title,
-                            })
-                            .then((resp) => {
-                              if (
-                                Object.values(resp.data).includes("deleted")
-                              ) {
-                                toast.success("blog deleted", {
-                                  id: "success",
-                                });
-                                setTimeout(() => {
-                                  toast.dismiss("success");
-
-                                  window.location.reload();
-                                }, 500);
-                              }
-                              if (
-                                Object.values(resp.data).includes(
-                                  "deleting failed"
-                                )
-                              ) {
-                                return toast.error("Draft deletion failed");
-                              }
-                            })
-                            .catch((err) => console.log(err));
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </div>
+    <div className="min-h-screen bg-zinc-900 text-white w-full max-w-3xl mx-auto mt-24 px-4">
+      <div className="space-y-6">
+        <h1 className="font-bold text-3xl text-white/90">Blogs</h1>
+        
+        <div className="space-y-4">
+          {!Array.isArray(blogs) || blogs.length === 0 ? (
+            <div className="bg-zinc-800/50 rounded-lg p-8 text-center">
+              <p className="text-xl font-medium text-white/70">You don't have any drafts yet</p>
+            </div>
+          ) : (
+            blogs.map((drafts, index) => (
+              <div 
+                key={index}
+                className="group bg-zinc-800/50 hover:bg-zinc-800/70 rounded-lg p-4 transition-all duration-200"
+                onClick={()=>navigate(`/blog/${drafts.BlogLink}`)}
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex-1 cursor-pointer">
+                    <h2 className="text-lg font-medium text-white/90 group-hover:text-white transition-colors">
+                      {drafts?.title || 'Untitled Draft'}
+                    </h2>
+                    <p className="text-zinc-400 text-sm mt-1">
+                      {drafts?.publishedOn ? getdate(drafts.publishedOn) : ''}
+                    </p>
                   </div>
-
-                  <hr className="border border-black mt-2 rounded-md" />
+                  
+                  <div className="flex items-center gap-4">
+                    <button
+                       onClick={(e)=> handleEdit(e,drafts)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-md bg-zinc-700/50 hover:bg-zinc-700 transition-colors"
+                    >
+                      <Edit size={16} />
+                      <span className="text-sm font-medium">Edit</span>
+                    </button>
+                    
+                    <button
+                      onClick={(e) => handleDelete(e,drafts)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-md bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-colors"
+                    >
+                      <Trash2 size={16} />
+                      <span className="text-sm font-medium">Delete</span>
+                    </button>
+                  </div>
                 </div>
-              ))
-            )}
-          </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
 export default ManageBlogs;

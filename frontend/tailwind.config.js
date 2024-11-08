@@ -6,6 +6,24 @@ export default {
   ],
   theme: {
     extend:{
+      typography: (theme) => ({
+        invert: {
+          css: {
+            '--tw-prose-body': theme('colors.zinc[300]'),
+            '--tw-prose-headings': theme('colors.white'),
+            '--tw-prose-links': theme('colors.red[400]'),
+            '--tw-prose-bold': theme('colors.white'),
+            '--tw-prose-quotes': theme('colors.zinc[100]'),
+            '--tw-prose-code': theme('colors.white'),
+            '--tw-prose-hr': theme('colors.zinc[700]'),
+            '--tw-prose-th-borders': theme('colors.zinc[700]'),
+            '--tw-prose-td-borders': theme('colors.zinc[800]'),
+          },
+        },
+      }),
+      screens: {
+      'Header': '896px',
+    },
         animation: {
         shimmer: 'shimmer 1.5s infinite linear',
       },
@@ -19,7 +37,7 @@ boxShadow: {
         custom: '8px 8px rgba(0, 0, 0)', // Custom shadow
       },
      fontFamily:{
-      display:["'Open Sans'", "sans-serif"]
+      display:["'Roboto'","sans-serif"]
      }, 
      colors:{
       "silver":"#c4c4c4"

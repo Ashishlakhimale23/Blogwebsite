@@ -1,43 +1,78 @@
-import { useContext, useState, useEffect,useRef } from "react";
+import { useContext, useState, useEffect,useRef,useCallback} from "react";
 import { getdate } from "../utils/date";
-import { WholeBlogAndUser, searchpopover } from "../context/context";
+import { searchpopover } from "../context/context";
 import { useNavigate } from "react-router-dom";
+import debounce from "lodash.debounce"
+import { api } from "../utils/axiosroute";
 
 function Search({imagesearch}) {
   const [searchvalue, setSearchvalue] = useState("");
   const [activetab, setActivetab] = useState("blogs");
+  const [blogs,setBlogs] = useState([])
+  const [users,setUsers] = useState([])
   const [blogprediction, setBlogprediction] = useState([]);
   const [userprediction, setUserprediction] = useState([]);
-  const { searchcontent } = useContext(WholeBlogAndUser);
-  const { blogs, users } = searchcontent;
   const navigate = useNavigate();
   const { search, setSearch } = useContext(searchpopover);
-const popoverRef = useRef(null);
+  const popoverRef = useRef(null);
 
-  function predictionforblogs(word) {
-    const predicatedarray = blogs.filter(
-      (obj) => obj.title.toLowerCase().indexOf(word.toLowerCase()) !== -1
-    );
-    setBlogprediction(predicatedarray);
-  }
 
-  function predictionforusers(word) {
-    const predicatedarray = users.filter(
-      (obj) => obj.username.toLowerCase().indexOf(word.toLowerCase()) !== -1
-    );
-    setUserprediction(predicatedarray);
+ useEffect(() => {
+  async function fetchusersandblogs() {
+    try {
+      const resp = await api.get("/getallusersandblogs");
+      console.log(resp);
+      setBlogs(resp.data.blogs);
+      setUsers(resp.data.users);
+    } catch (err) {
+      console.log(err);
+    }
   }
+  fetchusersandblogs();
+}, []);
+
+const debouncedSearch = useCallback(
+  debounce((searchTerm) => {
+    if (searchTerm === "") {
+      setBlogprediction([]);
+      setUserprediction([]);
+    } else {
+      const predicatedblogarray = blogs.filter(
+      (obj) => obj.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setBlogprediction(predicatedblogarray);
+
+     const predicateduserarray = users.filter(
+      (obj) => obj.username.toLowerCase().includes(searchTerm.toLowerCase()) 
+    );
+    setUserprediction(predicateduserarray); 
+  
+    }
+  }, 300),
+  [blogs,users]
+);
+
+useEffect(() => {
+  debouncedSearch(searchvalue.trim());
+  return () => {
+    debouncedSearch.cancel();
+  };
+}, [searchvalue,debouncedSearch]);
+
+    
  const handleClickOutside = (event) => {
     if (popoverRef.current && !popoverRef.current.contains(event.target) && imagesearch.current && !imagesearch.current.contains(event.target)) {
       setSearch(false);
     }
   };
+
   useEffect(() => {
     document.body.classList.add("overflow-hidden");
     return () => {
       document.body.classList.remove("overflow-hidden");
     };
   }, []);
+
   useEffect(() => {
     if (search) {
       document.addEventListener("mousedown", handleClickOutside);
@@ -48,50 +83,51 @@ const popoverRef = useRef(null);
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [search]);
-
   return (
-    <div className="fixed w-full min-h-screen  flex justify-center  p-3 pt-0">
-      <div className="w-[700px] p-10 bg-white rounded-lg mt-3 h-fit max-h-screen overflow-y-scroll no-scrollbar shadow-xl border border-black" ref={popoverRef}>
-        <div className="sticky top-0 bg-white z-10 pb-3">
+    <div className="fixed w-full min-h-screen  flex justify-center z-50 text-white p-3 pt-0">
+      <div className="w-[700px] p-10 bg-zinc-800 rounded-lg mt-4 h-fit max-h-screen overflow-y-scroll no-scrollbar shadow-xl" ref={popoverRef}>
+        <div className="sticky top-0  pb-3">
           <input
             type="text"
             value={searchvalue}
-            className="outline-none w-full p-4 border border-black  rounded-lg"
+            className="outline-none w-full bg-zinc-700/50 p-4 rounded-lg"
             onChange={(e) => {
               setSearchvalue(e.target.value);
-              predictionforblogs(e.target.value);
-              predictionforusers(e.target.value);
             }}
           />
           <div>
-            {searchvalue.length === 0 ? (
+            {!searchvalue.length ? (
               <div className="flex justify-center mt-2 text-lg">
-                <p>Search for people, blogs, and tags</p>
+                <p>Search for people and blogs</p>
               </div>
             ) : (
               <div>
                 <div className="flex text-lg mt-3 justify-around">
                   <button
-                    className={`pr-2 pl-2 pt-1 pb-1 hover:bg-black hover:text-white ${
-                      activetab === "blogs" ? "bg-black text-white" : ""
-                    }`}
-                    onClick={() => setActivetab("blogs")}
-                  >
-                    Blogs
-                  </button>
-                  <button
-                    className={`pr-2 pl-2 pt-1 pb-1 hover:bg-black hover:text-white ${
-                      activetab === "peoples" ? "bg-black text-white" : ""
-                    }`}
-                    onClick={() => setActivetab("peoples")}
-                  >
-                    Peoples
-                  </button>
+                onClick={() => {
+                  setActivetab("blogs")
+                }}
+              className={`px-4 py-2 flex items-center space-x-2 
+                       border border-zinc-700 rounded-lg transition-all duration-200 disabled:opacity-50 ${activetab !=='blogs' ? 'text-zinc-300 bg-zinc-800/50 hover:bg-zinc-800 ':'bg-zinc-700/50 text-white'}`}
+            >
+             Blogs 
+            </button>
+            <button
+                onClick={() => {
+                  setActivetab("peoples")
+                }}
+              className={`px-4 py-2 flex items-center space-x-2 
+                       border border-zinc-700 rounded-lg transition-all duration-200 disabled:opacity-50 ${activetab !=='peoples' ? 'text-zinc-300 bg-zinc-800/50 hover:bg-zinc-800 ':'bg-zinc-700/50 text-white'} `}
+            >
+              Peoples
+            </button>
+                  
                 </div>
               </div>
             )}
           </div>
         </div>
+
         <div className="mb-10">
           {activetab === "blogs" && searchvalue.length !== 0 && (
             blogprediction.length === 0 ? (
@@ -107,10 +143,10 @@ const popoverRef = useRef(null);
                         setSearch(!search);
                       }}
                     >
-                      <p className="text-lg text-black  hover:underline">
+                      <p className="text-lg text-white hover:underline">
                         {bookmarks.title}
                       </p>
-                      <p className="text-lg text-gray-600">
+                      <p className="text-lg text-slate-600">
                         {getdate(bookmarks.publishedOn)}
                       </p>
                     </div>
@@ -156,5 +192,4 @@ const popoverRef = useRef(null);
     </div>
   );
 }
-
-export default Search;
+export default Search

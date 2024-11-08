@@ -103,31 +103,28 @@ function Signin() {
 
   return (
     <>
-      <div className="font-display min-h-screen flex flex-col justify-center">
+      <div className="font-display min-h-screen flex flex-col text-white justify-center">
         <form
           action=""
           onSubmit={handelsubmit}
           className=" relative sm:w-96 mx-auto text-center"
         >
-          <div className="text-4xl font-bold mb-3">
-            <span className="text-black">Get</span>
-            <span className="text-black">better</span>
-          </div>
+          
           <label className="text-4xl font-bold block">Join the Community</label>
           <label htmlFor="">
-            Already have an account ?{" "}
+            Already have an account ?
             <a href="/login" className="underline hover:text-silver">
-              {" "}
+              
               Log in
             </a>
           </label>
-          <div className="mt-4  bg-white rounded-lg border-4 border-black shadow-custom">
+          <div className="mt-4 rounded-lg bg-neutral-800/50">
             <div className="px-3 py-4">
               <label className="block font-semibold text-left">Email</label>
               <input
                 type="email"
                 placeholder="Email"
-                className="mt-2 focus:border-black border-2 w-full h-5  rounded-md px-4 py-5"
+                className="mt-2 w-full h-5 rounded-md px-4 py-5 outline-none bg-zinc-700/50"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -135,7 +132,7 @@ function Signin() {
               <input
                 type="text"
                 placeholder="Username"
-                className="mt-2  w-full h-5 focus:border-black border-2 bg-white rounded-md px-4 py-5"
+                className="mt-2  w-full h-5 rounded-md px-4 py-5 outline-none bg-zinc-700/50"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
@@ -145,7 +142,7 @@ function Signin() {
               <input
                 type="password"
                 placeholder="Password"
-                className="mt-2 w-full h-5 border-2  focus:border-black rounded-md px-4 py-5 mb-2"
+                className="mt-2 w-full h-5 rounded-md px-4 py-5 mb-2 outline-none bg-zinc-700/50"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -153,7 +150,7 @@ function Signin() {
               <div className="flex justify-between items-baseline">
                 <button
                   type="submit"
-                  className="px-5 py-3 bg-white mt-2 text-black rounded-md  border-4 border-black hover:bg-black hover:text-white"
+                  className="px-5 py-3 bg-zinc-800/50 hover:bg-zinc-700/50 mt-2 text-white rounded-md  hover:text-white"
                 >
                   Signup
                 </button>

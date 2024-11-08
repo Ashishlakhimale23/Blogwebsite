@@ -2,3 +2,196 @@
 @tailwind components;
 @tailwind utilities;
 /* Custom CSS for multiline ellipsis */
+/* Add this to your global.css or styles.css */
+
+/* Editor.js Dark Theme */
+.codex-editor {
+  color: #ffffff;
+}
+
+.ce-toolbar__content {
+  background: #1e1e1e;
+}
+
+.ce-paragraph {
+  color: #ffffff;
+}
+
+.ce-toolbar__plus,
+.ce-toolbar__settings-btn {
+  background-color: #2d2d2d !important;
+  color: #ffffff !important;
+}
+
+.ce-toolbar__plus:hover,
+.ce-toolbar__settings-btn:hover {
+  background-color: #3d3d3d !important;
+}
+
+.ce-inline-toolbar,
+.ce-conversion-toolbar,
+.ce-settings {
+  background: #2d2d2d !important;
+  border-color: #3d3d3d !important;
+  color: #ffffff !important;
+}
+
+.cdx-search-field {
+  background: #2d2d2d !important;
+  color: #ffffff !important;
+  border-color: #3d3d3d !important;
+}
+
+.ce-popover {
+  background: #2d2d2d !important;
+  border-color: #3d3d3d !important;
+}
+
+.ce-popover-item {
+  color: #ffffff !important;
+}
+
+
+.ce-popover-item:hover {
+  background: #3d3d3d !important;
+}
+
+/* Specific tool styles */
+.ce-block--selected .ce-block__content {
+  background: #2d2d2d !important;
+}
+
+.cdx-block {
+  color: #ffffff;
+}
+
+
+/* List tool */
+.cdx-list {
+  color: #ffffff;
+}
+
+/* Code tool */
+.cdx-input {
+  background: #2d2d2d !important;
+  color: #ffffff !important;
+  border-color: #3d3d3d !important;
+
+}
+
+/* Table tool */
+.tc-table {
+  background: #2d2d2d !important;
+  border-color: #3d3d3d !important;
+}
+
+.tc-cell {
+  border-color: #3d3d3d !important;
+  color: #ffffff !important;
+}
+
+/* Link tool */
+.ce-inline-tool-input {
+  background: #2d2d2d !important;
+  color: #ffffff !important;
+  border-color: #3d3d3d !important;
+}
+
+.ce-inline-toolbar {
+  background: #2d2d2d !important;
+  border-color: #3d3d3d !important;
+  border-radius: 6px !important;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Individual inline tool buttons */
+.ce-inline-toolbar__buttons {
+  color: #ffffff !important;
+}
+
+.ce-inline-tool {
+  color: #ffffff !important;
+  transition: background 0.2s ease !important;
+  padding: 6px !important;
+}
+
+/* Hover effect for inline tools */
+.ce-inline-tool:hover {
+  background: #3d3d3d !important;
+  color: #ffffff !important;
+}
+
+/* Active state for inline tools */
+.ce-inline-tool--active {
+  background: #3d3d3d !important;
+  color: #4a9eff !important;
+}
+
+/* Settings button in inline toolbar */
+.ce-inline-toolbar__dropdown {
+  background: #2d2d2d !important;
+  color: #ffffff !important;
+  border-color: #3d3d3d !important;
+}
+
+.ce-inline-toolbar__dropdown:hover {
+  background: #3d3d3d !important;
+}
+
+/* Dropdown menu in inline toolbar */
+.ce-conversion-toolbar {
+  background: #2d2d2d !important;
+  border-color: #3d3d3d !important;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+.ce-conversion-tool {
+  color: #ffffff !important;
+  transition: background 0.2s ease !important;
+}
+
+.ce-conversion-tool:hover {
+  background: #3d3d3d !important;
+}
+
+/* Input fields in inline toolbar (like link input) */
+.ce-inline-tool-input {
+  background: #2d2d2d !important;
+  color: #ffffff !important;
+  border-color: #3d3d3d !important;
+  padding: 6px 10px !important;
+}
+
+/* Link tool specific styles */
+.ce-inline-toolbar__dropdown-content {
+  background: #2d2d2d !important;
+  border-color: #3d3d3d !important;
+}
+
+.ce-inline-toolbar__dropdown-item {
+  color: #ffffff !important;
+}
+
+.ce-inline-toolbar__dropdown-item:hover {
+  background: #3d3d3d !important;
+}
+
+/* Icons within inline tools */
+.ce-inline-tool svg {
+  fill: currentColor !important;
+}
+
+/* Tooltip styling */
+.ce-toolbar__plus:hover::after,
+.ce-toolbar__settings-btn:hover::after,
+.ce-inline-tool:hover::after {
+  background: #1e1e1e !important;
+  color: #ffffff !important;
+  border: 1px solid #3d3d3d !important;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Selected text highlight color */
+::selection {
+  background: #4a9eff33 !important;
+}

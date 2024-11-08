@@ -1,11 +1,27 @@
-import { useRef, useState , useEffect, useContext} from "react";
+import { useRef, useState , useEffect} from "react";
+import { useParams } from "react-router-dom";
 import techStack from "../utils/suggestion";
-import { UserContext } from "../context/context";
 import Joi from "joi";
 import { getdate } from "../utils/date";
-import {Toaster,toast} from "react-hot-toast"
+import {toast} from "react-hot-toast"
 import { api } from "../utils/axiosroute";
 function Usersinfo(){
+const UserInfo ={
+  _id:"",
+  username:"",
+  email:"",
+  pfplink:"",
+  aboutyou:"",
+  github:"",
+  twitter:"",
+  techstack:[],
+  blogs:[],
+  draft:[],
+  joinedOn:"",
+  bookmarks:[]
+}
+
+ const {username:admin} = useParams()
   const twittervalidation = Joi.string()
     .pattern(/^https:\/\/twitter\.com\/[A-Za-z0-9_]+$/)
     .required();
@@ -16,9 +32,16 @@ function Usersinfo(){
     .pattern(/^https:\/\/github\.com\/[A-Za-z0-9_]+$/)
     .required();
 
-  const { info, setInfo, initialinfo } = useContext(UserContext);
-  const { email, username, twitter, github, aboutyou, techstack, pfplink } =
-    info;
+  const [info,setInfo] = useState(UserInfo)
+const {
+    username,
+    pfplink,
+    aboutyou,
+    github,
+    twitter,
+    techstack,
+    email
+  } = info;
 
   const [predicated, setPredicated] = useState([]);
 
@@ -28,8 +51,7 @@ function Usersinfo(){
 
   useEffect(() => {
     async function fetchuserinfo() {
-      await api
-        .get("/getuserinfo")
+      await api.post("/getotheruserinfo",{Username:admin})
         .then((response) => {
           console.log(response);
           console.log("its not setting the info ");
@@ -42,7 +64,6 @@ function Usersinfo(){
             github: response.data.userinfo.github,
             twitter: response.data.userinfo.twitter,
             techstack: response.data.userinfo.techstack,
-            draft: response.data.userinfo.draft,
             joinedOn: getdate(response.data.userinfo.joinedOn),
           });
         })
@@ -79,8 +100,9 @@ function Usersinfo(){
   };
 
   const handleOnClickDeleteTech = (e) => {
+   
     const updatedarray = techstack.filter(
-      (item) => item != e.currentTarget.parentElement.firstChild.innerText
+      (item) => item != e.currentTarget.parentElement.innerText
     );
     setInfo((prevInfo) => ({ ...prevInfo, techstack: updatedarray }));
   };
@@ -171,150 +193,136 @@ function Usersinfo(){
   };
 
   return (
-    <>
-      <div className="p-2 w-full h-full space-y-5 sm:pr-10 sm:pl-10 lg:flex lg:justify-center lg:space-x-5 mt-20 ">
-        <div className="lg:w-1/2 p-6 pb-0">
-          <div className=" space-y-5 ">
-            <div className="space-y-4">
-              <div className="space-y-1">
-                <div>
-                  <p className="font-bold  text-lg">
-                    Profile Photo (click the pfp to change)
-                  </p>
-                  <div className="w-48  rounded-full">
-                    <label htmlFor="uploadprofile">
-                      <img
-                        src={pfplink}
-                        ref={pfpRef}
-                        className="z-20 w-48 h-48 rounded-full"
-                      />
-                      <input
-                        type="file"
-                        name=""
-                        id="uploadprofile"
-                        accept=".jpg, .png, .jepg"
-                        hidden
-                        onChange={handlepfpchange}
-                      />
-                    </label>
-                  </div>
-                </div>
-                <label className="font-bold text-lg">User name</label>
-                <p className="p-4 border-2 border-black rounded-md text-lg">
-                  {username}
-                </p>
-              </div>
-              <div className="space-y-1">
-                <label className="font-bold text-lg">Email</label>
-                <p className="p-4  border-2 border-black rounded-md text-lg">
-                  {email}
-                </p>
-              </div>
-              <div className="space-y-1">
-                <label className="font-bold text-lg">Twitter Profile</label>
-                <input
-                  type="text"
-                  className=" p-4 border-2 border-black text-lg outline-none  rounded-lg bg-slate-100 hover:bg-white w-full"
-                  placeholder="https://twitter.com/johndoe"
-                  value={twitter}
-                  onChange={handlechangeTwitter}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="space-y-5 pr-6 pl-6 lg:pl-0 lg:pt-0 lg:pb-0 lg:pr-6 lg:w-1/2">
-          <div className="w-full space-y-4">
-            <div className="space-y-1">
-              <div className="space-y-1 w-full">
-                <label className="block font-bold text-lg">
-                  Github Profile
-                </label>
-                <input
-                  type="text"
-                  className="  p-4 border-2 outline-none border-black text-lg  rounded-lg bg-slate-100 hover:bg-white w-full"
-                  placeholder="https://github.com/johndoe"
-                  value={github}
-                  onChange={handlechangeGithub}
-                />
-              </div>
-              <div className="relative space-y-1">
-                <label className="font-bold block text-lg">Tech Stack</label>
-                <input
-                  className="w-full p-4 border-2 border-black text-lg outline-none  rounded-lg bg-slate-100 hover:bg-white "
-                  placeholder="Search for technologies, topics,more..."
-                  value={temptechstack}
-                  onChange={handletechstack}
-                  onKeyDown={handleKeyDownTechstack}
-                  ref={stackRef}
-                />
+      <>
+  <div className="p-2 sm:p-6 text-zinc-200 flex flex-col items-center mt-24">
+    <div className="w-full max-w-4xl bg-neutral-800/50 rounded-lg shadow-lg p-2 sm:p-6 mb-8">
+      <div className="text-center">
+        <p className="font-semibold text-2xl text-zinc-100 mb-2">Profile Photo</p>
+        <p className="text-sm text-zinc-400">(Click to change)</p>
+      </div>
+      <div className="flex justify-center mt-4">
+        <label htmlFor="uploadprofile" className="cursor-pointer">
+          <img
+            src={pfplink}
+            ref={pfpRef}
+            className="w-32 h-32 rounded-full border-4 border-zinc-700 hover:border-zinc-500 transition duration-200"
+            alt="Profile"
+          />
+          <input
+            type="file"
+            id="uploadprofile"
+            accept=".jpg, .png, .jpeg"
+            hidden
+            onChange={handlepfpchange}
+          />
+        </label>
+      </div>
+    </div>
 
-                <div className=" bg-white rounded-xl shadow-md absolute space-y-2 z-10 w-full">
-                  {!temptechstack.length || techstack.length >= 5
-                    ? null
-                    : predicated.map((tech, index) => (
-                        <div
-                          key={index}
-                          className="p-1 hover:bg-gray-300"
-                          onClick={handleOnClickOnTechstack}
-                        >
-                          {tech}
-                        </div>
-                      ))}
-                </div>
+    <div className="w-full max-w-4xl bg-neutral-800/50 rounded-lg shadow-lg p-2 sm:p-6 mb-8 space-y-5">
+      <div>
+        <label className="font-semibold text-lg text-zinc-100">Username</label>
+        <input className="p-4 rounded-lg bg-zinc-700/50 text-lg w-full outline-none" readOnly value={username}/>
+      </div>
+      <div>
+        <label className="font-semibold text-lg text-zinc-100">Email</label>
+        <input className="p-4 rounded-lg bg-zinc-700/50 text-lg w-full outline-none" readOnly value={email} />
+      </div>
+      <div>
+        <label className="font-semibold text-lg text-zinc-100">Twitter Profile</label>
+        <input
+          type="text"
+          className="w-full p-3 rounded-lg bg-zinc-700/50 text-lg text-zinc-100 placeholder-zinc-400 focus:ring-2 focus:ring-white outline-none transition duration-200"
+          placeholder="https://twitter.com/johndoe"
+          value={twitter}
+          onChange={handlechangeTwitter}
+        />
+      </div>
+    </div>
 
-                <div className="flex flex-wrap  items-center mt-2">
-                  {!techstack
-                    ? null
-                    : techstack.map((tech, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center p-1 pr-2 pl-2 ring-1 hover:bg-blue-100 ring-blue-700 m-1 text-blue-600 rounded-2xl  "
-                        >
-                          <p>{tech} </p>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke-width="1.5"
-                            stroke="currentColor"
-                            class="size-6"
-                            className="h-5 ml-1"
-                            onClick={handleOnClickDeleteTech}
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              d="M6 18 18 6M6 6l12 12"
-                            />
-                          </svg>
-                        </div>
-                      ))}
-                </div>
-              </div>
-              <div className="space-y-1 ">
-                <label className="font-bold block text-lg">
-                  Profile Bio (About you)
-                </label>
-                <textarea
-                  className="w-full outline-none rounded-lg bg-slate-100 p-4 border-2 border-black hover:bg-white text-lg"
-                  placeholder="I am a developer from ...."
-                  value={aboutyou}
-                  rows={8}
-                  onChange={handleChangeAbout}
-                ></textarea>
-              </div>
-              <button
-                className="p-2 pr-4 pl-4 font-bold rounded-md  border-2 border-black hover:bg-black hover:text-white"
-                onClick={handleupdate}
+   
+    <div className="w-full max-w-4xl bg-neutral-800/50 rounded-lg shadow-lg p-2 sm:p-6 mb-8 space-y-5">
+      <div>
+        <label className="font-semibold text-lg text-zinc-100">Github Profile</label>
+        <input
+          type="text"
+          className="w-full p-3 rounded-lg bg-zinc-700/50 text-lg text-zinc-100 placeholder-zinc-400 focus:ring-2 focus:ring-white outline-none transition duration-200"
+          placeholder="https://github.com/johndoe"
+          value={github}
+          onChange={handlechangeGithub}
+        />
+      </div>
+      <div className="relative">
+        <label className="font-semibold text-lg text-zinc-100">Tech Stack</label>
+        <input
+          type="text"
+          className="w-full p-3  rounded-lg bg-zinc-700/50 text-lg text-zinc-100 placeholder-zinc-400 focus:ring-2 focus:ring-white outline-none transition duration-200"
+          placeholder="Search for technologies..."
+          value={temptechstack}
+          onChange={handletechstack}
+          onKeyDown={handleKeyDownTechstack}
+          ref={stackRef}
+        />
+        
+        {temptechstack.length > 0 && techstack.length < 5 && (
+          <div className="absolute z-10 mt-2 w-full bg-zinc-800 border border-zinc-600 rounded-lg shadow-lg">
+            {predicated.map((tech, index) => (
+              <div
+                key={index}
+                className="p-2 hover:bg-zinc-700 cursor-pointer transition duration-150"
+                onClick={handleOnClickOnTechstack}
               >
-                Update
+                {tech}
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex flex-wrap mt-4">
+          {Array.isArray(techStack) && techstack.map((tech, index) => (
+            <div
+              key={index}
+              className="flex items-center m-1 p-2 bg-zinc-700/50 text-white rounded-full"
+            >
+              {tech}
+              <button onClick={handleOnClickDeleteTech}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  className="w-4 h-4 ml-1 text-zinc-200"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
-          </div>
+          ))}
         </div>
       </div>
-    </>
+    </div>
+
+    <div className="w-full max-w-4xl bg-neutral-800/50 rounded-lg shadow-lg p-2 sm:p-6 mb-8">
+      <label className="font-semibold text-lg text-zinc-100">Profile Bio</label>
+      <textarea
+        className="w-full p-3 rounded-lg bg-zinc-700/50 text-lg text-zinc-100 placeholder-zinc-400 focus:ring-2 focus:ring-white outline-none transition duration-200"
+        placeholder="I am a developer from ...."
+        value={aboutyou}
+        rows={4}
+        onChange={handleChangeAbout}
+      ></textarea>
+    </div>
+
+    <button
+      className="w-full max-w-md p-3 font-bold rounded-lg bg-neutral-800/50 hover:bg-neutral-800 text-lg text-zinc-100 transition duration-200 shadow-lg"
+      onClick={handleupdate}
+    >
+      Update Profile
+    </button>
+  </div>
+</>
+
+ 
   );
 }
 export default Usersinfo

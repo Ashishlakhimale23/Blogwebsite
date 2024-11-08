@@ -77,7 +77,7 @@ function Login() {
   }, [logged]);
   return (
     <>
-      <div className="min-h-screen flex flex-col justify-center font-display">
+      <div className="min-h-screen flex flex-col justify-center text-white font-display">
         <form
           action=""
           className=" relative sm:w-96 mx-auto text-center"
@@ -90,13 +90,13 @@ function Login() {
               Sign up
             </a>
           </label>
-          <div className="mt-4 bg-white  rounded-lg border-4 border-black shadow-custom">
+          <div className="mt-4 rounded-lg bg-neutral-800/50">
             <div className="px-3 py-4">
               <label className="block font-semibold text-left">Email</label>
               <input
                 type="email"
                 placeholder="Email"
-                className="mt-2  hover:outline-none focus:outline-none w-full bg-white border-2 border-black h-5 rounded-md px-4 py-5"
+                className="mt-2  hover:outline-none focus:outline-none bg-zinc-700/50 w-full h-5 rounded-md px-4 py-5"
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
@@ -109,7 +109,7 @@ function Login() {
               <input
                 type="password"
                 placeholder="Password"
-                className="mt-2  hover:outline-none focus:outline-none w-full h-5 border-2 bg-white border-black rounded-md px-4 py-5"
+                className="mt-2  hover:outline-none focus:outline-none text-white bg-zinc-700/50  w-full h-5 bg-white rounded-md px-4 py-5"
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
@@ -119,7 +119,7 @@ function Login() {
               <div className="flex justify-between items-baseline">
                 <button
                   type="submit"
-                  className=" px-5 py-3 bg-white mt-2 text-black rounded-md  border-4 border-black hover:bg-black hover:text-white"
+                  className=" px-5 py-3 mt-2 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 text-white hover:text-white"
                 >
                   Login
                 </button>

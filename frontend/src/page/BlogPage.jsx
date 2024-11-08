@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import BlogParser from "../component/blogparser";
 import { getdate } from "../utils/date";
 import { api } from "../utils/axiosroute";
 import { SkeletonLoad } from "../component/Skeleton";
 
+import { CalendarDays, Clock } from 'lucide-react';
 const blogstructure={
     blogtitle:"",
     content:[],
@@ -22,7 +23,7 @@ function BlogPage(){
     useEffect(()=>{
         async function fetchblog(){
           setLoading(true)
-            await api.post('/blog',{BlogLink}).
+            await api.get('/blog',{params:{BlogLink}}).
             then((resp)=>{
               console.log(resp.data.blog)
                 setBlog((prevBlog)=>({
@@ -53,35 +54,55 @@ function BlogPage(){
     )
   }
 
-   return (
-   <div className="lg:flex lg:justify-center lg:items-center md:p-12 md:pt-0 min-h-screen mt-16 overflow-hidden w-full font-serif">
-  <div className=" p-6 w-full max-w-[900px]">
-    <div className="space-y-3 mb-4 w-full">
-      <div className="w-full bg-black">
-        <img src={banner} alt="Banner" className="aspect-video w-full" />
-      </div>
-      <div>
-        <p className="text-2xl font-bold">{blogtitle}</p>
-      </div>
-      <div className="flex items-center cursor-pointer" onClick={() => navigate(`/${username}`)}>
-        <div>
-          <img src={pfplink} alt="Profile" className="mr-2 w-12 h-12 rounded-full" />
+
+  return (
+    <div className="min-h-screen mt-14">
+      <div className="max-w-3xl mx-auto px-4 py-8 md:py-12">
+        <div className="space-y-6 mb-8">
+          <h1 className="text-xl sm:text-3xl  md:text-4xl font-bold text-white leading-tight">
+            {blogtitle}
+          </h1>
+          <div className="relative w-full overflow-hidden rounded-xl shadow-lg">
+            <img 
+              src={banner} 
+              alt={blogtitle}
+              className="w-full aspect-video object-cover hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+          <div className="flex items-center space-x-4 border-b border-slate-700 pb-6">
+            <div className="relative">
+              <img 
+                src={pfplink} 
+                alt={username} 
+                className="w-12 h-12 rounded-full  "
+              />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center space-x-2">
+                <h2 className="text-lg font-semibold text-white hover:text-slate-400 cursor-pointer" onClick={()=>navigate(`/${username}`)}>
+                  {username}
+                </h2>
+              </div>
+              <div className="flex items-center space-x-4 text-sm text-slate-400">
+                <div className="flex items-center">
+                  <CalendarDays className="w-4 h-4 mr-1" />
+                  <span>{pushlishedAt}</span>
+                </div>
+                
+              </div>
+            </div>
+          </div>
         </div>
-        <div>
-          <p className="font-semibold">By {username}</p>
-          <p className="font-semibold">Published on {pushlishedAt}</p>
-        </div>
+        <article className="max-w-none">
+          {content.map((block, i) => (
+            <BlogParser key={i} block={block} />
+          ))}
+        </article>
       </div>
     </div>
-    <div className="w-full">
-      {content.map((block, i) => (
-        <BlogParser key={i} block={block} />
-      ))}
-    </div>
-  </div>
-</div> 
   );
 };
+
  
 
 export default BlogPage;
