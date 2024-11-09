@@ -36,8 +36,6 @@ export const UserProfileSkeleton = ()=>{
         </div>
       </div>
     </div>
-
-    {/* About Me Skeleton */}
     <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-xl p-6 space-y-4 animate-pulse">
       <div className="h-5 bg-zinc-700 rounded-md w-1/4" />
       <div className="space-y-2">
@@ -45,8 +43,6 @@ export const UserProfileSkeleton = ()=>{
         <div className="h-4 bg-zinc-700 rounded-md w-3/4" />
       </div>
     </div>
-
-    {/* Tech Stack Skeleton */}
     <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-xl p-6 space-y-4 animate-pulse">
       <div className="h-5 bg-zinc-700 rounded-md w-1/4" />
       <div className="flex flex-wrap gap-2">
@@ -55,8 +51,6 @@ export const UserProfileSkeleton = ()=>{
         ))}
       </div>
     </div>
-
-    {/* Blogs Skeleton */}
     <div className="bg-zinc-800/50 border border-zinc-700/50 rounded-xl p-6 space-y-4 animate-pulse">
       <div className="h-5 bg-zinc-700 rounded-md w-1/4" />
       <div className="space-y-4">

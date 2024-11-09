@@ -41,7 +41,7 @@ function BlogPage(){
 
                 }))
                   
-                setLoading(false)
+                setLoading(false);
             })
             .catch(err=>console.log(err))
         }
