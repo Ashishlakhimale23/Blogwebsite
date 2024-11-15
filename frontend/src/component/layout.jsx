@@ -12,6 +12,7 @@ import Draft from '../page/draft'
 import ManageBlogs from '../page/manageblogs'
 import Bookmark from '../page/bookmarks'
 import { PrivateRoute } from './PrivateRoute'
+import { Footer } from './Footer'
 
 
 
@@ -39,6 +40,7 @@ function Layout() {
           <Route path="/bookmarks" element={<Bookmark />} />
         </Route>
       </Routes>
+      {!noheader.includes(location.pathname) && <Footer />}
     </>
   );
 }
