@@ -1,7 +1,8 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import {  useNavigate } from "react-router-dom";
-import {Toaster,toast} from "react-hot-toast"
+import {toast} from "react-hot-toast"
 import { Authcontext } from "../context/context";
+import { Eye,EyeOff } from "lucide-react";
 import joi from "joi"
 import axios from "axios";
 
@@ -15,7 +16,7 @@ function Signin() {
       .string()
       .pattern(
         new RegExp(
-          "^(?=.*[a-zA-Z0-9])(?=.*[!@#$%^&*()_+])[a-zA-Z0-9!@#$%^&*()_+]{3,30}$"
+          "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,25}$"
         )
       ),
   });
@@ -25,7 +26,8 @@ function Signin() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [file, setFile] = useState(null);
+  const [validationError,setValidationError] = useState(false)
+  const [show,setShow] = useState(false)
 
   const handelsubmit = useCallback(
     async (e) => {
@@ -51,7 +53,7 @@ function Signin() {
 
         const result = schema.validate(userInput, { abortEarly: false });
         if (Object.keys(result).includes("error")) {
-          return toast.error("Validation error");
+          setValidationError(true)
         }
 
         await axios
@@ -103,11 +105,11 @@ function Signin() {
 
   return (
     <>
-      <div className="font-display min-h-screen flex flex-col text-white justify-center">
+      <div className="font-display min-h-screen flex flex-col text-white justify-center p-4">
         <form
           action=""
           onSubmit={handelsubmit}
-          className=" relative sm:w-96 mx-auto text-center"
+          className=" sm:w-96 mx-auto text-center"
         >
           
           <label className="text-4xl font-bold block">Join the Community</label>
@@ -139,13 +141,24 @@ function Signin() {
               <label className="block mt-2 font-semibold text-left">
                 Password
               </label>
+              <div className="relative w-full">
               <input
-                type="password"
+                type={show ? "text" : "password"}
                 placeholder="Password"
                 className="mt-2 w-full h-5 rounded-md px-4 py-5 mb-2 outline-none bg-zinc-700/50"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              <button
+                type="button"
+                className="absolute right-3 top-4 text-gray-400 hover:text-white"
+                onClick={() => setShow(!show)}
+              >
+                {show ? <EyeOff size={20}  /> : <Eye size={20} />}
+              </button>
+</div>
+              <p className={ !validationError ? `hidden ` :"block text-start text-red-400/50"}>Password must be 8-25 characters long, include at least one letter, 
+                one digit, and one special character</p>
 
               <div className="flex justify-between items-baseline">
                 <button

@@ -15,7 +15,6 @@ function ManageBlogs(){
  useEffect(() => {
     const fetchblogs = async () => {
       const response = await api.get("/getuserblogs")
-      console.log(response)
       if(response.status == 200){
         setBlogs(response.data.blogs.blogs)
         setLoading(false)

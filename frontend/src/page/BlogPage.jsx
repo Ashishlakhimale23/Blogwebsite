@@ -25,7 +25,6 @@ function BlogPage(){
           setLoading(true)
             await api.get('/blog',{params:{BlogLink}}).
             then((resp)=>{
-              console.log(resp.data.blog)
                 setBlog((prevBlog)=>({
                     ...prevBlog,
                     blogtitle:resp.data.blog.title,

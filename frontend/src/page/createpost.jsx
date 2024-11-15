@@ -118,10 +118,8 @@ function CreatePost() {
       try {
         setLoading(true);
         const savedData = await texteditor.instance.save();
-        console.log(savedData);
         if (savedData.blocks.length > 0) {
           setBlog((prevBlog) => ({ ...prevBlog, content: savedData.blocks }));
-          console.log(content);
           if (edited) {
             const response = await api
               .post("/updateblog", {
@@ -133,7 +131,6 @@ function CreatePost() {
               })
               if(response.status===200){
                setBlog(({
-                ...prevBlog,
                 title: "",
                 banner: "",
                 content: [],
@@ -145,9 +142,7 @@ function CreatePost() {
               return toast.success("Created Blog"); 
 
             }else{
-              console.log(response)
                setBlog(({
-                ...prevBlog,
                 title: "",
                 banner: "",
                 content: [],
@@ -166,18 +161,24 @@ function CreatePost() {
               banner,
             });
             if (response.status === 200) {
-              setBlog((prevBlog) => ({
-                ...prevBlog,
+              setBlog({
                 title: "",
                 banner: "",
                 content: [],
                 _id: "",
                 edited: false,
-              }));
+              });
               navigate("/home");
 
               return toast.success("Created Blog");
             } else {
+              setBlog({
+                title: "",
+                banner: "",
+                content: [],
+                _id: "",
+                edited: false,
+              });
               return toast.error("Cant Uplaod the blog");
             }
           }

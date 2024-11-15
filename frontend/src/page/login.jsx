@@ -1,10 +1,10 @@
 import axios from "axios";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Toaster,toast } from "react-hot-toast";
+import {toast } from "react-hot-toast";
 import Joi from "joi";
+import { Eye,EyeOff} from "lucide-react";
 import { Authcontext } from "../context/context";
-
 
 
 function Login() {
@@ -12,6 +12,10 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { logged, setLogged } = useContext(Authcontext);
+  const [validationError, setValidationError] = useState(false);
+  const [show, setShow] = useState(false);
+
+  
   const schema = Joi.object({
     email: Joi.string().email({
       minDomainSegments: 2,
@@ -19,116 +23,134 @@ function Login() {
     }),
     password: Joi.string().pattern(
       new RegExp(
-        "^(?=.*[a-zA-Z0-9])(?=.*[!@#$%^&*()_+])[a-zA-Z0-9!@#$%^&*()_+]{3,30}$"
+        "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,25}$"
       )
     ),
   });
 
-  const handelsubmit = useCallback(
+  const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
+      setValidationError(false); 
+
       const userInput = {
-        email: email,
+        email: email.trim(), 
         password: password,
       };
-      const result = schema.validate(userInput, { abortEarly: false });
-
-      if (Object.keys(result).includes("error")) {
-        return toast.error("Validation error");
+      
+      if (!userInput.email) {
+        toast.error("Enter the email");
+        return;
       }
-      if (!email.length) {
-        return toast.error("Enter the email");
-      }
-      if (!password.length) {
-        return toast.error("Enter the password");
+      if (!userInput.password) {
+        toast.error("Enter the password");
+        return;
       }
 
-      await axios
-        .post(`${process.env.BASE_URL}/login`, userInput)
-        .then((response) => {
-          if (Object.keys(response.data).includes("token")) {
-            localStorage.setItem("authtoken", response.data.token);
-            localStorage.setItem("refreshtoken", response.data.refreshtoken);
-            setLogged(true);
-          }
-        })
-        .catch((error) => {
-          const respdata = error.response.data;
-          const respkeys = Object.keys(respdata);
+      try {
+        const { error } = schema.validate(userInput, { abortEarly: false });
+        if (error) {
+          setValidationError(true);
+          return;
+        }
 
-          if (respkeys.includes("User not found")) {
-            return toast.error("user not found");
-          }
-          if (respkeys.includes("Incorrect password")) {
-            return toast.error("Incorrrect password");
-          }
-          if (respkeys.includes("Internal server error")) {
-            return toast.error("An Error occured");
-          }
-        });
+        const response = await axios.post(
+          `${process.env.BASE_URL}/login`,
+          userInput
+        );
+
+        if (response.data.token) {
+          localStorage.setItem("authtoken", response.data.token);
+          localStorage.setItem("refreshtoken", response.data.refreshtoken);
+          setLogged(true);
+        }
+      } catch (error) {
+        const errorMessage = error.response?.data;
+        
+        if (errorMessage?.["User not found"]) {
+          toast.error("User not found");
+        } else if (errorMessage?.["Incorrect password"]) {
+          toast.error("Incorrect password");
+        } else {
+          toast.error("An error occurred");
+        }
+      }
     },
-    [email, password]
+    [email, password, schema, setLogged]
   );
 
   useEffect(() => {
     if (logged) {
       navigate("/home");
     }
-  }, [logged]);
+  }, [logged, navigate]); 
   return (
-    <>
-      <div className="min-h-screen flex flex-col justify-center text-white font-display">
-        <form
-          action=""
-          className=" relative sm:w-96 mx-auto text-center"
-          onSubmit={handelsubmit}
-        >
-          <label className="text-4xl font-bold block">Welcome back.</label>
-          <label htmlFor="">
-            Dont have an account ?{" "}
-            <a href="/signin" className="underline hover:text-silver">
-              Sign up
-            </a>
-          </label>
-          <div className="mt-4 rounded-lg bg-neutral-800/50">
-            <div className="px-3 py-4">
-              <label className="block font-semibold text-left">Email</label>
-              <input
-                type="email"
-                placeholder="Email"
-                className="mt-2  hover:outline-none focus:outline-none bg-zinc-700/50 w-full h-5 rounded-md px-4 py-5"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-              />
+    <div className="min-h-screen flex flex-col justify-center text-white font-display p-4">
+      <form className="sm:w-96 mx-auto text-center" onSubmit={handleSubmit}>
+        <h1 className="text-4xl font-bold block mb-2">Welcome back.</h1>
+        <p>
+          Don't have an account?{" "}
+          <a href="/signin" className="underline hover:text-silver">
+            Sign up
+          </a>
+        </p>
 
-              <label className="block mt-2  font-semibold text-left">
-                Password
-              </label>
+        <div className="mt-4 w-full rounded-lg bg-neutral-800/50">
+          <div className="px-3 py-4">
+            <label htmlFor="email" className="block font-semibold text-left">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Email"
+              className="mt-2 hover:outline-none focus:outline-none bg-zinc-700/50 w-full h-5 rounded-md px-4 py-5"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <label htmlFor="password" className="block mt-2 font-semibold text-left">
+              Password
+            </label>
+            <div className="relative w-full">
               <input
-                type="password"
+                id="password"
+                type={show ? "text" : "password"}
                 placeholder="Password"
-                className="mt-2  hover:outline-none focus:outline-none text-white bg-zinc-700/50  w-full h-5 bg-white rounded-md px-4 py-5"
+                className="mt-2 hover:outline-none focus:outline-none text-white bg-zinc-700/50 w-full h-5 rounded-md px-4 py-5"
                 value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
+                onChange={(e) => setPassword(e.target.value)}
               />
+              <button
+                type="button"
+                className="absolute right-3 top-4 text-gray-400 hover:text-white"
+                onClick={() => setShow(!show)}
+              >
+                {show ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
 
-              <div className="flex justify-between items-baseline">
-                <button
-                  type="submit"
-                  className=" px-5 py-3 mt-2 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 text-white hover:text-white"
-                >
-                  Login
-                </button>
-              </div>
+            {validationError && (
+              <p className="text-red-400/50 text-sm mt-2 text-left">
+                Password must be 8-25 characters long, include at least one letter, 
+                one digit, and one special character
+              </p>
+            )}
+
+            <div className="flex justify-between items-baseline">
+              <button
+                type="submit"
+                className="px-5 py-3 mt-2 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 
+                          text-white hover:text-white transition-colors"
+              >
+                Login
+              </button>
             </div>
           </div>
-        </form>
-      </div>
-    </>
+        </div>
+      </form>
+    </div>
   );
 }
+
 export default Login;

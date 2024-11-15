@@ -51,10 +51,8 @@ const {
 
   useEffect(() => {
     async function fetchuserinfo() {
-      await api.post("/getotheruserinfo",{Username:admin})
+      await api.get("/getotheruserinfo",{params:{Username:admin}})
         .then((response) => {
-          console.log(response);
-          console.log("its not setting the info ");
           setInfo({
             _id: response.data.userinfo._id,
             username: response.data.userinfo.username,
