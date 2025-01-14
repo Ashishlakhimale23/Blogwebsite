@@ -15,6 +15,6 @@ app.use(cors({
 app.use(express.urlencoded({extended:false}))
 app.use(express.json())
 
-connection(process.env.DBURL).then(()=>console.log("server connected"))
+connection(process.env.DBURL as  string).then(()=>console.log("server connected"))
 app.use("/user",router)
 app.listen(8000,()=>console.log("server started"))

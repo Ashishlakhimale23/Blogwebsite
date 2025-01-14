@@ -1,4 +1,4 @@
-export function RemoveAllTheSpace(str){
+export function RemoveAllTheSpace(str:string){
     let str1 = str.trim()
     let array = str.split(" ")
     array = array.filter(element => element!="")
@@ -6,7 +6,7 @@ export function RemoveAllTheSpace(str){
     return str1 
 }
 
-export function RemoveExtraSpace(str){
+export function RemoveExtraSpace(str:string){
     let str1 = str.trim()
     let array = str.split(" ")
     array = array.filter(element => element!="")

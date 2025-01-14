@@ -199,7 +199,7 @@ function Header() {
         ) :<div/>}
       </div>
       {search ? (
-        <div>
+        <div >
           <Search imagesearch={imagesearch} />
         </div>
       ) : null}

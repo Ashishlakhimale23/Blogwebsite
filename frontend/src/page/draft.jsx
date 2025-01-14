@@ -61,7 +61,7 @@ const Draft = () => {
 
   if(loading){
     return (
-      <div className="p-10 animate-shimmer bg-gradient-to-r max-w-3xl mx-auto mt-24 rounded-md from-zinc-500/5 via-zinc-500/10 to-zinc-500/5 bg-[length:400%_100%]">
+      <div className="p-10 mx-2 animate-shimmer bg-gradient-to-r max-w-3xl sm:mx-auto mt-24 rounded-md from-zinc-500/5 via-zinc-500/10 to-zinc-500/5 bg-[length:400%_100%]">
       </div>
     )
   }

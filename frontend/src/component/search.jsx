@@ -84,8 +84,8 @@ useEffect(() => {
     };
   }, [search]);
   return (
-    <div className="fixed w-full min-h-screen  flex justify-center z-50 text-white p-3 pt-0">
-      <div className="w-[700px] p-10 bg-zinc-800 rounded-lg mt-4 h-fit max-h-screen overflow-y-scroll no-scrollbar shadow-xl" ref={popoverRef}>
+    <div className="fixed w-full min-h-screen flex justify-center z-50 text-white p-3 pt-28">
+      <div className="w-[700px] p-10 bg-zinc-800 rounded-lg h-fit max-h-screen overflow-y-scroll no-scrollbar shadow-xl" ref={popoverRef}>
         <div className="sticky top-0  pb-3">
           <input
             type="text"

@@ -1,11 +1,20 @@
 
+import { Request, Response } from "express";
 import Blog from "../model/blogs.js";
 import User from "../model/user.js";
 import {RemoveAllTheSpace ,RemoveExtraSpace} from "../Utils/FilterOuThespaces.js" 
+import z from "zod"
 
-export const handlecreateblog=async(req,res)=>{
+interface blog { 
+  title : string,
+  banner : string ,
+  result : boolean,
+  content : object[]
+}
+
+export const handlecreateblog=async(req:Request<{},{},blog>,res:Response)=>{
   const userid = req.user;
-let { title = '', content = '', result, banner = '' } = req.body;
+let { title , content, result, banner  } = req.body;
 
 
 if (!banner.length) {
@@ -19,6 +28,20 @@ if (!content.length) {
 }
 
 try {
+
+  const blogValidation = z.object({
+    title : z.string(),
+    banner : z.string(),
+    result : z.boolean(),
+    content : z.string().array(),
+  })
+
+ 
+  const validation = blogValidation.safeParse(req.body)
+  if(validation.error){
+    console.log(validation.error)
+    return res.status(411).json({message:'type validation'})
+  }
 
   const titleNoSpaces = RemoveExtraSpace(title);
   let BlogTitle = RemoveAllTheSpace(title);
@@ -60,7 +83,7 @@ try {
     
 
 
-export const handlegetblogs=async(req,res)=>{
+export const handlegetblogs=async(req:Request,res:Response)=>{
   const userid = req.user 
   const bookmarks = await User.findById(userid).select('bookmarks')
   const response = await Blog.find({Published:true}).populate("author","username pfplink")
@@ -70,7 +93,7 @@ export const handlegetblogs=async(req,res)=>{
   return res.status(200).json({blogs:response,bookmarks:bookmarks})
 }
 
-export const handlegetuserinfo = async (req,res)=>{
+export const handlegetuserinfo = async (req:Request,res:Response)=>{
   const userid = req.user
   const response = await User.findById(userid).select("username pfplink")
   if(!response){
@@ -81,7 +104,7 @@ export const handlegetuserinfo = async (req,res)=>{
   
 }
 
-export const handlegetotheruserinfo = async (req,res)=>{
+export const handlegetotheruserinfo = async (req:Request,res:Response)=>{
   const Username = req.query.Username;
   console.log(Username)
   const response = await User.findOne({username:Username}).select("username email pfplink about twitter github techstack joinedOn blogs").populate("blogs","title publishedOn BlogLink")
@@ -92,7 +115,7 @@ export const handlegetotheruserinfo = async (req,res)=>{
   
 }
 
-export const handlegetpraticularblog=async (req,res)=>{
+export const handlegetpraticularblog=async (req:Request,res:Response)=>{
   const BlogLink = req.query.BlogLink;
   
   const response = await Blog.findOne({
@@ -106,13 +129,12 @@ export const handlegetpraticularblog=async (req,res)=>{
   
 }
 
-export const handledraftdeletion=async(req,res)=>{
+export const handledraftdeletion=async(req:Request,res:Response)=>{
   const {_id} = req.query;
   const userid = req.user;
   console.log(_id)
   try{
   const check = await User.findOne({_id:userid},{draft:_id})
-  console.log("check",check.draft)
   if(!check){
     return res.status(401).json({message:"blog doesnt belong to you"})
   }
@@ -135,7 +157,7 @@ export const handledraftdeletion=async(req,res)=>{
   }
    
 }
-export const handleblogdeletion=async(req,res)=>{
+export const handleblogdeletion=async(req:Request,res:Response)=>{
   const {_id} = req.query;
   const userid = req.user;
   try{
@@ -163,7 +185,7 @@ export const handleblogdeletion=async(req,res)=>{
   
 }
 
-export const handlegetbookmarks=async(req,res)=>{
+export const handlegetbookmarks=async(req:Request,res:Response)=>{
   const userid=req.user;
   try{
   const response = await User.findById({_id:userid}).select("bookmarks").populate("bookmarks","title banner content publishedOn BlogLink")
@@ -177,7 +199,7 @@ export const handlegetbookmarks=async(req,res)=>{
   }
 }
 
-export const handlegetdrafts=async(req,res)=>{
+export const handlegetdrafts=async(req:Request,res:Response)=>{
   const userid=req.user;
 
   try{
@@ -191,7 +213,7 @@ export const handlegetdrafts=async(req,res)=>{
   }
 }
 
-export const handlesavebookmark=async(req,res)=>{
+export const handlesavebookmark=async(req:Request<{},{},{blogid:string}>,res:Response)=>{
   const {blogid} = req.body;
   const userid = req.user
   try{
@@ -210,7 +232,7 @@ export const handlesavebookmark=async(req,res)=>{
   }
 }
 
-export const handleremovebookmark=async(req,res)=>{
+export const handleremovebookmark=async(req:Request<{},{},{blogid:string}>,res:Response)=>{
   const {blogid} = req.body;
   const userid = req.user
 
@@ -233,7 +255,7 @@ export const handleremovebookmark=async(req,res)=>{
 
 }
 
-export const handlegetallblogsanduser=async(req,res)=>{
+export const handlegetallblogsanduser=async(req:Request,res:Response)=>{
   try{
     const user = await User.find({}).select("username pfplink joinedOn")
     const blogs = await Blog.find({Published:true}).select("title banner publishedOn BlogLink")
@@ -243,7 +265,7 @@ export const handlegetallblogsanduser=async(req,res)=>{
   }
 }
 
-export const handleblogupdate=async(req,res)=>{
+export const handleblogupdate=async(req:Request,res:Response)=>{
   const { title, _id, content, result, banner } = req.body;
   console.log(req.body)
   const userid = req.user;
@@ -299,7 +321,7 @@ if (result) {
   
 }
 
-export const handlegetuserblogs = async(req,res)=>{
+export const handlegetuserblogs = async(req:Request,res:Response)=>{
   const userid = req.user
   try{
   const response = await User.findById({_id:userid}).select("blogs").populate("blogs","title banner publishedOn BlogLink content")

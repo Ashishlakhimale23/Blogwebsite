@@ -5,12 +5,12 @@ export function Footer(){
     return (
         
         <>
-        <footer className="border-t  border-zinc-800 text-white px-4 py-3 bg-zinc-900/80">
-            <div className="flex items-center max-w-4xl mx-auto justify-between">
-                <div className="text-center">
-                    <h1 className="font-display font-semibold text-xl sm:text-2xl">Thoughts.</h1>
+        <footer className="border-t  border-zinc-800 text-white px-2 sm:px-4  py-3 bg-zinc-900/80 ">
+            <div className="sm:flex sm:items-center space-y-2 sm:space-y-0 max-w-4xl mx-auto sm:justify-between">
+                <div className="text-center ">
+                    <h1 className="font-display text-zinc-400 font-medium sm:text-xl">©2024 Thoughts. All Rights Reserved</h1>
                     </div>
-                    <div className="space-x-3">
+                    <div className="space-x-3 flex-shrink-0 flex justify-center">
                         <button className="p-2 rounded-full border border-zinc-800 hover:bg-zinc-800"
                         onClick={()=>window.open(`https://x.com/ashishZeroOne`,'_blank')}
                         >

@@ -55,7 +55,7 @@ function BlogPage(){
 
 
   return (
-    <div className="min-h-screen mt-14">
+    <div className="min-h-screen mt-14 overflow-hidden">
       <div className="max-w-3xl mx-auto px-4 py-8 md:py-12">
         <div className="space-y-6 mb-8">
           <h1 className="text-xl sm:text-3xl  md:text-4xl font-bold text-white leading-tight">
@@ -92,7 +92,7 @@ function BlogPage(){
             </div>
           </div>
         </div>
-        <article className="max-w-none">
+        <article className="">
           {content.map((block, i) => (
             <BlogParser key={i} block={block} />
           ))}
