@@ -9,7 +9,7 @@ declare global{
     }
   }
 }
-export async function userverification(req:Request,res:Response,next:NextFunction){
+export const userverification = async(req:Request,res:Response,next:NextFunction):Promise<any>=>{
   const auth : string | undefined = req.headers.authorization || req.headers.Authorization as string;
 
   if (!auth || !auth?.startsWith("Bearer") ){
@@ -24,7 +24,9 @@ export async function userverification(req:Request,res:Response,next:NextFunctio
       if (err) {
         return res.status(401).end();
       }
+      // @ts-ignore
       req.user = user?.id;
+
       next();
     });
   

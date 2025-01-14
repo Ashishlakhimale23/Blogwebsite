@@ -18,13 +18,13 @@ let { title , content, result, banner  } = req.body;
 
 
 if (!banner.length) {
-  return res.status(400).json({ error: "You must add a banner to the blog" });
+   res.status(400).json({ error: "You must add a banner to the blog" });
 }
 if (!title.length) {
-  return res.status(400).json({ error: "You must add a title to the blog" });
+   res.status(400).json({ error: "You must add a title to the blog" });
 }
 if (!content.length) {
-  return res.status(400).json({ error: "No content provided" });
+   res.status(400).json({ error: "No content provided" });
 }
 
 try {
@@ -40,7 +40,7 @@ try {
   const validation = blogValidation.safeParse(req.body)
   if(validation.error){
     console.log(validation.error)
-    return res.status(411).json({message:'type validation'})
+    res.status(411).json({message:'type validation'})
   }
 
   const titleNoSpaces = RemoveExtraSpace(title);
@@ -72,11 +72,11 @@ try {
     { $push: updateField }
   );
 
-  return res.status(200).json({ status: "done" });
+  res.status(200).json({ status: "done" });
 
 } catch (error) {
   console.error(error); 
-  return res.status(500).json({ message: 'Internal server error' });
+   res.status(500).json({ message: 'Internal server error' });
 }
 
 }
@@ -88,19 +88,19 @@ export const handlegetblogs=async(req:Request,res:Response)=>{
   const bookmarks = await User.findById(userid).select('bookmarks')
   const response = await Blog.find({Published:true}).populate("author","username pfplink")
   if(!response){
-    return res.status(500).json({message:"internal server error"})
+     res.status(500).json({message:"internal server error"})
   }
-  return res.status(200).json({blogs:response,bookmarks:bookmarks})
+   res.status(200).json({blogs:response,bookmarks:bookmarks})
 }
 
 export const handlegetuserinfo = async (req:Request,res:Response)=>{
   const userid = req.user
   const response = await User.findById(userid).select("username pfplink")
   if(!response){
-    return res.status(500).json({message:"internal server error"})
+     res.status(500).json({message:"internal server error"})
 
   }
-  return res.status(200).json({userinfo:response})
+   res.status(200).json({userinfo:response})
   
 }
 
@@ -109,9 +109,9 @@ export const handlegetotheruserinfo = async (req:Request,res:Response)=>{
   console.log(Username)
   const response = await User.findOne({username:Username}).select("username email pfplink about twitter github techstack joinedOn blogs").populate("blogs","title publishedOn BlogLink")
   if(!response){
-    return res.status(500).json({message:"internal server error"})
+     res.status(500).json({message:"internal server error"})
   }
-  return res.status(200).json({userinfo:response})
+   res.status(200).json({userinfo:response})
   
 }
 
@@ -123,9 +123,9 @@ export const handlegetpraticularblog=async (req:Request,res:Response)=>{
   }).populate("author","username pfplink")
 
   if(!response){
-    return res.status(500).json({message:"internal server error"})
+     res.status(500).json({message:"internal server error"})
   }
-  return res.status(200).json({blog:response})
+   res.status(200).json({blog:response})
   
 }
 
@@ -136,24 +136,24 @@ export const handledraftdeletion=async(req:Request,res:Response)=>{
   try{
   const check = await User.findOne({_id:userid},{draft:_id})
   if(!check){
-    return res.status(401).json({message:"blog doesnt belong to you"})
+     res.status(401).json({message:"blog doesnt belong to you"})
   }
   const deleteCompletely= await Blog.findByIdAndDelete(_id)
   if(!deleteCompletely){
-    return res.status(500).json({message:"error occured while deleting"});
+     res.status(500).json({message:"error occured while deleting"});
   }
 
 
   const Done = await User.findOneAndUpdate({_id:userid},{$pull:{draft:_id}});
   console.log(Done)
   if(!Done){
-    return res.status(500).json({message:"error while deleting the draft"})
+     res.status(500).json({message:"error while deleting the draft"})
   }
 
-  return res.status(200).json({message:'deleted'})
+   res.status(200).json({message:'deleted'})
 
   }catch(error){
-    return res.status(500).json({message:"internal server error"})
+     res.status(500).json({message:"internal server error"})
   }
    
 }
@@ -163,23 +163,23 @@ export const handleblogdeletion=async(req:Request,res:Response)=>{
   try{
   const check = await User.findOne({_id:userid},{blogs:_id})
   if(!check){
-    return res.status(401).json({message:"blog doesnt belong to you"})
+     res.status(401).json({message:"blog doesnt belong to you"})
   }
   await User.updateMany({blogs:_id},{$pull:{blogs:_id}})
   const deleteCompletely= await Blog.findByIdAndDelete(_id)
 
   if(!deleteCompletely){
-    return res.status(500).json({message:"error occured while deleting"});
+     res.status(500).json({message:"error occured while deleting"});
   }
   const Done = await User.findOneAndUpdate({_id:userid},{$pull:{blogs:_id}})
   if(!Done){
-    return res.status(500).json({message:"error while deleting the blogs"})
+     res.status(500).json({message:"error while deleting the blogs"})
   }
 
-  return res.status(200).json({message:'successfully deleted'})
+   res.status(200).json({message:'successfully deleted'})
 
   }catch(error){
-    return res.status(500).json({message:"internal server error"})
+     res.status(500).json({message:"internal server error"})
   }
 
   
@@ -190,12 +190,12 @@ export const handlegetbookmarks=async(req:Request,res:Response)=>{
   try{
   const response = await User.findById({_id:userid}).select("bookmarks").populate("bookmarks","title banner content publishedOn BlogLink")
   if(!response){
-    return res.status(200).json({bookmarks:response})
+     res.status(200).json({bookmarks:response})
   }
-  return res.status(200).json({bookmark:response})
+   res.status(200).json({bookmark:response})
 
   }catch(error){
-    return res.status(500).json({message:"internal server error"})
+     res.status(500).json({message:"internal server error"})
   }
 }
 
@@ -205,11 +205,11 @@ export const handlegetdrafts=async(req:Request,res:Response)=>{
   try{
   const response = await User.findById({_id:userid}).select("draft").populate("draft","title banner publishedOn BlogLink content")
   if(!response){
-    return res.status(200).json({drafts:response})
+     res.status(200).json({drafts:response})
   }
-  return res.status(200).json({drafts:response})
+   res.status(200).json({drafts:response})
   }catch(error){
-    return res.status(500).json({message:"internal server error"})
+     res.status(500).json({message:"internal server error"})
   }
 }
 
@@ -223,12 +223,12 @@ export const handlesavebookmark=async(req:Request<{},{},{blogid:string}>,res:Res
     }
   )
   if(!response){
-    return res.status(500).json({failed:blogid})
+     res.status(500).json({failed:blogid})
   }
-  return res.status(200).json({success:blogid})
+   res.status(200).json({success:blogid})
 
   }catch(error){
-    return res.status(500).json({message:"internal server error"})
+     res.status(500).json({message:"internal server error"})
   }
 }
 
@@ -245,12 +245,12 @@ export const handleremovebookmark=async(req:Request<{},{},{blogid:string}>,res:R
   )
   if(!response){
 
-    return res.status(500).json({failed:blogid})
+     res.status(500).json({failed:blogid})
   }
 
-    return res.status(200).json({success:blogid})
+     res.status(200).json({success:blogid})
   }catch(error){
-    return res.status(500).json({message:"internal server error"})
+     res.status(500).json({message:"internal server error"})
   }
 
 }
@@ -259,9 +259,9 @@ export const handlegetallblogsanduser=async(req:Request,res:Response)=>{
   try{
     const user = await User.find({}).select("username pfplink joinedOn")
     const blogs = await Blog.find({Published:true}).select("title banner publishedOn BlogLink")
-    return res.status(200).json({users:user,blogs:blogs})
+     res.status(200).json({users:user,blogs:blogs})
   }catch(error){
-    return res.status(500).json({message:"internal server error"})
+     res.status(500).json({message:"internal server error"})
   }
 }
 
@@ -271,7 +271,8 @@ export const handleblogupdate=async(req:Request,res:Response)=>{
   const userid = req.user;
   const blog = await Blog.findById({ _id: _id });
   if(!blog){
-    return res.status(400).json({message:"blog doesnt exists"})
+     res.status(400).json({message:"blog doesnt exists"})
+     return
   }
   try{
 if (result) {
@@ -308,11 +309,11 @@ if (result) {
   await blog
     .save()
     .then(() => {
-      return res.status(200).json({ blog: "Updated" });
+       res.status(200).json({ blog: "Updated" });
     })
     .catch((err) => {
       console.log(err)
-      return res.status(500).json({ blog: "Update failed" });
+       res.status(500).json({ blog: "Update failed" });
     });
 
   }catch(error){
@@ -326,11 +327,11 @@ export const handlegetuserblogs = async(req:Request,res:Response)=>{
   try{
   const response = await User.findById({_id:userid}).select("blogs").populate("blogs","title banner publishedOn BlogLink content")
   if(!response){
-    return res.status(200).json({blogs:response})
+     res.status(200).json({blogs:response})
   }
-  return res.status(200).json({blogs:response})
+   res.status(200).json({blogs:response})
   }catch(error){
-    return res.status(500).json({message:"internal server error"})
+     res.status(500).json({message:"internal server error"})
   } 
 
 

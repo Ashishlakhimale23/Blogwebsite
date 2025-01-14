@@ -1,6 +1,6 @@
 import User from "../model/user.js";
 import bcrpty from "bcryptjs";
-import jwt, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { config } from "dotenv";
 import { Response, Request } from "express";
 import z from 'zod'
@@ -13,7 +13,7 @@ interface User {
 }
 
 interface login extends Omit<User,'username'> {}
-export async function handlesignin(req:Request<{},{},User>, res:Response) {
+export const handlesignin = async(req:Request<{},{},User>, res:Response) => {
     const { username, email, password } = req.body;
     const userValidation = z.object({
         username : z.string() ,
@@ -27,12 +27,12 @@ export async function handlesignin(req:Request<{},{},User>, res:Response) {
     
         if(validation.error){
             console.log(validation.error)
-            return res.status(411).json({message:"type validation error"})
+             res.status(411).json({message:"type validation error"}).end()
         }
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ message: 'Already signed up', email });
+            res.status(400).json({ message: 'Already signed up', email }).end();
         }
 
         const saltRounds = 10;
@@ -55,16 +55,16 @@ export async function handlesignin(req:Request<{},{},User>, res:Response) {
             { expiresIn: '7d' } 
         );
 
-        return res.status(201).json({"token": token,
+        res.status(201).json({"token": token,
             "refreshtoken":refreshtoken
-         });
+         }).end();
     } catch (error) {
         console.error('Error during user sign up:', error);
-        return res.status(500).json({ message: 'Internal server error', error });
+        res.status(500).json({ message: 'Internal server error', error }).end();
     }
 }
 
-export async function handlelogin(req:Request<{},{},login>, res:Response) {
+export const handlelogin = async(req:Request<{},{},login>, res:Response)=> {
     const { email, password } = req.body;
 
     const userValidation = z.object({
@@ -76,16 +76,18 @@ export async function handlelogin(req:Request<{},{},login>, res:Response) {
         const validation = userValidation.safeParse(req.body)
         if(validation.error){
             console.log(validation.error)
-            return res.status(411).json({message:"type validation error"})
+            res.status(411).json({message:"type validation error"})
         }
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({ 'User not found' :email });
+            res.status(404).json({ 'User not found' :email })
+            return
         }
 
         const isPasswordValid = await bcrpty.compare(password, user.password);
+        
         if (!isPasswordValid) {
-            return res.status(401).json({ 'Incorrect password':email  });
+            res.status(401).json({ 'Incorrect password':email  });
         }
 
         const token = jwt.sign(
@@ -100,12 +102,12 @@ export async function handlelogin(req:Request<{},{},login>, res:Response) {
             { expiresIn: '7d' } 
         );
 
-        return res.status(200).json({"token": token,
+        res.status(200).json({"token": token,
             "refreshtoken":refreshtoken
-         });
+         })
     } catch (error) {
         console.error('Error during login:', error);
-        return res.status(500).json({ message: 'Internal server error', error });
+        res.status(500).json({ message: 'Internal server error', error });
     }
 }
 
@@ -128,7 +130,7 @@ export const handlerevokthetoken =async(req:Request,res:Response)=>{
     jwt.verify(refreshtoken,process.env.REFERSH_SECRET_KEY as string,(err:any,resp:any)=>{
         console.log(err,resp)
         if(err){
-            return res.status(403).end()
+            return res.status(403)
         }
         const newauthtoken = jwt.sign({ email:resp.email, id:resp.id },
             process.env.SECRET_KEY as string,
@@ -141,5 +143,5 @@ export const handlerevokthetoken =async(req:Request,res:Response)=>{
 }
 
 export const handlecron=async(req : Request,res:Response)=>{
-    return res.status(200).json({message:"Im awake"})
+    res.status(200).json({message:"Im awake"})
 }

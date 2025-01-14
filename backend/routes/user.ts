@@ -1,7 +1,7 @@
 import express from "express"
-import {handlesignin,handlelogin,handleupdateuserinfo, handlerevokthetoken,handlecron} from "../controllers/user.js"
-import { handlecreateblog, handlegetblogs,handlegetuserinfo,handlegetpraticularblog,handlegetotheruserinfo,handledraftdeletion, handleblogdeletion, handlesavebookmark, handleremovebookmark, handlegetbookmarks, handlegetallblogsanduser, handleblogupdate, handlegetdrafts,handlegetuserblogs } from "../controllers/blogs.js"
-import {userverification} from "../middleware/middleware.js"
+import {handlesignin,handlelogin,handleupdateuserinfo, handlerevokthetoken,handlecron} from "../controllers/user"
+import { handlecreateblog, handlegetblogs,handlegetuserinfo,handlegetpraticularblog,handlegetotheruserinfo,handledraftdeletion, handleblogdeletion, handlesavebookmark, handleremovebookmark, handlegetbookmarks, handlegetallblogsanduser, handleblogupdate, handlegetdrafts,handlegetuserblogs } from "../controllers/blogs"
+import {userverification} from "../middleware/middleware"
 export const router = express.Router()
 //users
 router.post("/signin",handlesignin)
