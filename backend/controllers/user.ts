@@ -3,22 +3,20 @@ import bcrpty from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { config } from "dotenv";
 import { Response, Request } from "express";
+import { user,login } from "../types/types";
 import z from 'zod'
 config()
 
-interface User {
-    username : string,
-    email : string ,
-    password : string 
-}
-
-interface login extends Omit<User,'username'> {}
-export const handlesignin = async(req:Request<{},{},User>, res:Response) => {
+export const handlesignin = async(req:Request<{},{},user>, res:Response) => {
     const { username, email, password } = req.body;
     const userValidation = z.object({
-        username : z.string() ,
-        email : z.string() ,
-        password : z.string().regex(/^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,25}$/)
+        username : z.string().min(2,{message:'username must be atleast 2 characters long.'}) ,
+        email : z.string().email({message:'please enter a valid eamil'}).trim() ,
+        password : z.string().min(8,{message:"be at least 8 character long"})
+        .regex(/[a-zA-Z]/, { message: 'Contain at least one letter.' })
+        .regex(/[0-9]/, { message: 'Contain at least one number.' })
+        .regex(/[^a-zA-Z0-9]/, {message: 'Contain at least one special character.'})
+        .trim(),
     })
 
     try {
@@ -68,8 +66,12 @@ export const handlelogin = async(req:Request<{},{},login>, res:Response)=> {
     const { email, password } = req.body;
 
     const userValidation = z.object({
-        email : z.string(),
-        password : z.string().regex(/^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,25}$/)
+        email : z.string().email({message:'please enter a valid eamil'}).trim() ,
+        password : z.string().min(8,{message:"be at least 8 character long"})
+        .regex(/[a-zA-Z]/, { message: 'Contain at least one letter.' })
+        .regex(/[0-9]/, { message: 'Contain at least one number.' })
+        .regex(/[^a-zA-Z0-9]/, {message: 'Contain at least one special character.'})
+        .trim(),
     })
 
     try {

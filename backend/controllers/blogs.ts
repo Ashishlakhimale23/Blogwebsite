@@ -3,14 +3,10 @@ import { Request, Response } from "express";
 import Blog from "../model/blogs.js";
 import User from "../model/user.js";
 import {RemoveAllTheSpace ,RemoveExtraSpace} from "../Utils/FilterOuThespaces.js" 
+import {blog} from "../types/types"
 import z from "zod"
 
-interface blog { 
-  title : string,
-  banner : string ,
-  result : boolean,
-  content : object[]
-}
+
 
 export const handlecreateblog=async(req:Request<{},{},blog>,res:Response)=>{
   const userid = req.user;
@@ -264,8 +260,10 @@ export const handlegetallblogsanduser=async(req:Request,res:Response)=>{
      res.status(500).json({message:"internal server error"})
   }
 }
-
-export const handleblogupdate=async(req:Request,res:Response)=>{
+interface UpdateBlog extends blog {
+  _id:string
+}
+export const handleblogupdate=async(req:Request<{},{},UpdateBlog>,res:Response)=>{
   const { title, _id, content, result, banner } = req.body;
   console.log(req.body)
   const userid = req.user;
