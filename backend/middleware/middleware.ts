@@ -9,12 +9,13 @@ declare global{
     }
   }
 }
-export const userverification = async(req:Request,res:Response,next:NextFunction):Promise<any>=>{
+export const userverification = async(req:Request,res:Response,next:NextFunction)=>{
   const auth : string | undefined = req.headers.authorization || req.headers.Authorization as string;
 
   if (!auth || !auth?.startsWith("Bearer") ){
 
-    return res.status(403).json({message:'unauthorized'})
+    res.status(403).json({message:'unauthorized'})
+    return
   }
 
   const Token : string = auth.split(" ")[1];
@@ -22,9 +23,10 @@ export const userverification = async(req:Request,res:Response,next:NextFunction
     jwt.verify(Token, process.env.SECRET_KEY as string, (err, user) => {
       console.log(user)
       if (err) {
-        return res.status(401).end();
+        res.status(401);
+        return
       }
-      // @ts-ignore
+      //@ts-ignore
       req.user = user?.id;
 
       next();

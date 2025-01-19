@@ -1,10 +1,11 @@
-import User from "../model/user.js";
+import User from "../model/user";
 import bcrpty from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { config } from "dotenv";
 import { Response, Request } from "express";
-import { user,login } from "../types/types";
+import { user,login, updateUserInfo } from "../types/types";
 import z from 'zod'
+import { string } from "joi";
 config()
 
 export const handlesignin = async(req:Request<{},{},user>, res:Response) => {
@@ -107,6 +108,7 @@ export const handlelogin = async(req:Request<{},{},login>, res:Response)=> {
         res.status(200).json({"token": token,
             "refreshtoken":refreshtoken
          })
+         return
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ message: 'Internal server error', error });
@@ -114,15 +116,50 @@ export const handlelogin = async(req:Request<{},{},login>, res:Response)=> {
 }
 
 
-export const handleupdateuserinfo=async (req:Request,res:Response)=>{
-  const formdata = req.body;
-  const user = req.user
-  await User.findByIdAndUpdate(user,formdata).then((resp)=>{
-    return res.status(200).json({task:"completed"})
-  }).catch(err=>{
-    return res.status(500).json({task:"failed"})
- } )
+export const handleupdateuserinfo=async (req:Request<{},{},updateUserInfo>,res:Response)=>{
+  const {username,email,twitterUrl,bio,githubUrl,techStacks,pfplink} = req.body
+  const user = req.user 
+  const userInfoValidation = z.object({
+    username:z.string(),
+    email:z.string().email().trim(),
+    twitterUrl:z.string().url(),
+    githubUrl:z.string().url(),
+    pfplink:z.string().url(),
+    bio:z.string(),
+    techStacks:z.array(z.string())
+  })
 
+  try{
+  const validation = userInfoValidation.safeParse(req.body)
+  if(validation.error){
+    console.log(validation.error)
+    res.status(411).json({message:"type validation"})
+    return
+  }
+
+  const response = await User.findByIdAndUpdate(user,{username:username,
+    email:email,
+    twitter:twitterUrl,
+    github:githubUrl,
+    pfplink:pfplink,
+    techstack:techStacks,
+    about:bio
+  })
+
+  if(!response){
+    res.status(500).json({message:"something went wrong on while saving the updates"})
+    return
+  }
+  res.status(200).json({message:"success"})
+  return
+
+  }catch(error){
+    console.log(error)
+    res.status(500).json({message:"internal server error"})
+    return
+  }
+  
+  
 }
 
 export const handlerevokthetoken =async(req:Request,res:Response)=>{
@@ -146,4 +183,5 @@ export const handlerevokthetoken =async(req:Request,res:Response)=>{
 
 export const handlecron=async(req : Request,res:Response)=>{
     res.status(200).json({message:"Im awake"})
+    return
 }

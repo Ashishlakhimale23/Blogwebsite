@@ -1,6 +1,6 @@
 import express from "express"
-import { connection } from "./connection.js" 
-import router from "./routes/user.js"
+import { connection } from "./connection" 
+import router from "./routes/user"
 import cors from "cors"
 import { config } from "dotenv"
 config()

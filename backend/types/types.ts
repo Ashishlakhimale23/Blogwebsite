@@ -16,6 +16,7 @@ export interface blog {
 export interface updateUserInfo  {
     username : string,
     email : string,
+    pfplink : string,
     twitterUrl : string,
     githubUrl : string,
     techStacks :string[],

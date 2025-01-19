@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "start": "nodemon index",
+    "start": "nodemon dist/index",
     "dev": "ts-node index"
   },
   "author": "",
