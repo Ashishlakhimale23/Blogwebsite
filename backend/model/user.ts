@@ -27,9 +27,10 @@ const user = new mongoose.Schema(
       default: "",
     },
     
-    techstack: {
-      type: [String],
-    },
+    techstack: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Tags",
+      }],
    
       twitter: {
         type: String,

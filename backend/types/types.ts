@@ -6,11 +6,17 @@ export interface user {
 
 export interface login extends Omit<user,'username'> {}
 
+interface ContentObject {
+  id : string,
+  type:string,
+  data :object 
+}
+
 export interface blog { 
   title : string,
   banner : string ,
   result : boolean,
-  content : object[]
+  content : ContentObject[]
 } 
 
 export interface updateUserInfo  {
